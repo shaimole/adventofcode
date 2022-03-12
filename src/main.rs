@@ -1,4 +1,4 @@
- 
+
 fn main() {
     println!("Hello, world!");
 }
@@ -6,7 +6,8 @@ fn main() {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn it_works() {
+    fn it_locatates_data_file() {
+
         assert_eq!(2 + 2, 4);
     }
 }
