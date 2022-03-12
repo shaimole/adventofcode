@@ -3,5 +3,16 @@
 version = 3
 
 [[package]]
+name = "adventofcode"
+version = "0.1.0"
+dependencies = [
+ "util",
+]
+
+[[package]]
 name = "day1"
+version = "0.1.0"
+
+[[package]]
+name = "util"
 version = "0.1.0"
