@@ -1,5 +1,5 @@
-use day2;
+use day3;
 
 fn main() {
-    println!("{0}",day2::solve2("./././day2/data/sample1"));
+    println!("{0}",day3::solve1("./././day3/data/sample1"));
 }
