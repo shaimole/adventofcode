@@ -27,10 +27,8 @@ fn gamma_rate(bits: [u32;32], length: usize) -> u32 {
     for n in (0..32).rev() {
         let value_of_bit = 32- n -1;
         if bits[n] as usize > length /2 {
-            println!("{:?}", 1);
             gamma_rate = gamma_rate + 2u32.pow(value_of_bit as u32);
         }
-        println!("{:?}", 0);
     }
     return gamma_rate;
 }
@@ -44,8 +42,6 @@ fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
         }
     }
     totals.reverse();
-    println!("{:?}", totals);
-
     return totals;
 }
 
