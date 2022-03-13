@@ -47,10 +47,7 @@ fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
 
 
 fn get_bit(number: &u32, position: usize) -> bool{
-    if number & (1 << position) != 0 {
-        return true;
-    }
-    return false;
+    return number & (1 << position) != 0 
 }
 
 
