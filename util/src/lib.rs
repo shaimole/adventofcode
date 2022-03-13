@@ -35,6 +35,20 @@ pub fn split_lines(file_content: io::Result<io::Lines<io::BufReader<File>>>, del
     return converted;
 }
 
+pub fn string_binary_to_u32(zeros_and_ones: String) -> u32 {
+    let mut binary_digit =  zeros_and_ones.chars().count();
+    let mut real_num: u32 = 0;
+    for c in zeros_and_ones.chars() { 
+        let mut temp_var = 2u32.pow(binary_digit.try_into().unwrap());
+        temp_var /= 2;
+        if c == '1'{
+            real_num += temp_var;
+        }
+        binary_digit -= 1;
+        }
+    return real_num;
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -63,6 +77,12 @@ mod tests {
         let file_content= super::read_lines("././data/sampleIntStr");
             let lines = super::split_lines(file_content," ");
             assert_eq!(lines.len(),6);
+    }
+
+    #[test] 
+    fn it_converts_string_to_u32() {
+        let converted = super::string_binary_to_u32("0101".to_string());
+        assert_eq!(converted,5);
     }
         
 }
