@@ -40,17 +40,7 @@ where P: AsRef<Path>, {
 fn parse(data: Vec<Vec<String>>) -> Vec<u32> {
     let mut converted = Vec::new();
     for sequence in data {
-        let mut binary_digit =  sequence[0].chars().count();
-        let mut real_num: u32 = 0;
-        for c in sequence[0].chars() { 
-            let mut temp_var = 2u32.pow(binary_digit.try_into().unwrap());
-            temp_var /= 2;
-            if c == '1'{
-                real_num += temp_var;
-            }
-            binary_digit -= 1;
-            }
-        converted.push(real_num);
+        converted.push(util::string_binary_to_u32(sequence[0].clone()));
     }
     return converted;
 }
