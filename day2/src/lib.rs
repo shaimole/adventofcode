@@ -12,10 +12,10 @@ where P: AsRef<Path>,{
 }
 
 
-fn read_data<P>(filename: P) -> Vec<i32> 
+fn read_data<P>(filename: P) -> Vec<Vec<String>> 
 where P: AsRef<Path>, {
     let lines = util::read_lines(filename);
-    return util::lines_to_int(lines);
+    return util::split_lines(lines," ");
 }
 
 
@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn it_should_read_the_testfile() {
         let result = super::read_data("././data/test");
-        assert_eq!(result.len(),10);
+        assert_eq!(result.len(),6);
     }
 
     // #[test]
