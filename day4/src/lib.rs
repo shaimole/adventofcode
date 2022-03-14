@@ -44,30 +44,31 @@ impl BingoBoard {
         return score;
     }
 
-    pub fn update(mut self, score_number: u16) -> BingoBoard {
+    pub fn update(&self, score_number: u16)  -> BingoBoard{
         let mut new_rows_horizontal = Vec::new(); 
         let mut new_rows_vertical = Vec::new();
-        for row in self.horizontal_rows {
+        for row in &self.horizontal_rows {
             let mut new_row = Vec::new();
             for number in row {
-                if number != score_number {
-                    new_row.push(number);
+                if number != &score_number {
+                    new_row.push(*number);
                 } 
             }
             new_rows_horizontal.push(new_row);
         }
-        for row in self.vertical_rows {
+        for row in &self.vertical_rows {
             let mut new_row = Vec::new();
             for number in row {
-                if number != score_number {
-                    new_row.push(number);
+                if number != &score_number {
+                    new_row.push(*number);
                 } 
             }
             new_rows_vertical.push(new_row);
         }
-        self.vertical_rows = new_rows_vertical;
-        self.horizontal_rows = new_rows_horizontal;
-        return self;
+        return BingoBoard {
+            vertical_rows: new_rows_vertical,
+            horizontal_rows: new_rows_horizontal
+        }
     }
 
     pub fn isBingo(&self) -> bool {
@@ -154,13 +155,13 @@ mod tests {
         vertical_rows.push(vec![4]);
         vertical_rows.push(vec![5]);
         vertical_rows.push(vec![6]);
-        let board = super::BingoBoard {
+        let mut board = super::BingoBoard {
             horizontal_rows: horizontal_rows,
             vertical_rows: vertical_rows,
         };
-        let score = board.update(1).score();
-        assert_eq!(score,20);
-        assert_eq!(*&board.isBingo(), true);
+        board = board.update(1);
+        assert_eq!(board.isBingo(), true);
+        assert_eq!(board.score(), 20);
     }
     // #[test]    
     // fn it_should_solve_testdata_for_part_2() {
