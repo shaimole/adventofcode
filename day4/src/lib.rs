@@ -1,15 +1,18 @@
 use util;
 use std::path::Path;
 
-pub fn solve1<P>(filename: P) -> i32 
+pub fn solve1<P>(filename: P) -> u16 
 where P: AsRef<Path>,{
-//    let draws = read_result_numbers(filename);
-//    let boards = read_boards(filename);
-//    for draw in draws {
-//        for board in boards {
-//             board.update(draw);
-//        }
-//    }
+   let draws = read_result_numbers(&filename);
+   let mut boards = read_boards(&filename);
+   for draw in draws {
+       for n in 0..boards.len() {
+            boards[n] = boards[n].update(draw);
+            if boards[n].isBingo() {
+                return boards[n].score() * draw;
+            }
+       }
+   }
    return 1;
 }
 
@@ -140,10 +143,10 @@ mod tests {
         assert_eq!(result[0].vertical_rows.len(),5);
     }
 
-    // #[test]
-    // fn it_should_solve_testdata_for_part_1() {
-    //     assert_eq!(super::solve1("././data/test"),4512);
-    // }
+    #[test]
+    fn it_should_solve_testdata_for_part_1() {
+        assert_eq!(super::solve1("././data/test"),4512);
+    }
 
     #[test]
     fn board_should_update_correctly() {
