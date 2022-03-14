@@ -34,7 +34,7 @@ struct BingoBoard {
 
 impl BingoBoard {
 
-    pub score(self) -> u16 {
+    pub fn score(self) -> u16 {
         let mut score: u16 = 0;
         let iter = self.horizontal_rows.iter();
         for row in iter {
