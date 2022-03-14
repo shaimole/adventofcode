@@ -34,7 +34,7 @@ struct BingoBoard {
 
 impl BingoBoard {
 
-    pub fn score(self) -> u16 {
+    pub fn score(&self) -> u16 {
         let mut score: u16 = 0;
         let iter = self.horizontal_rows.iter();
         for row in iter {
@@ -159,9 +159,8 @@ mod tests {
             vertical_rows: vertical_rows,
         };
         let score = board.update(1).score();
-        let is_bingo = board.isBingo();
         assert_eq!(score,20);
-        assert_eq!(is_bingo,true);
+        assert_eq!(*&board.isBingo(), true);
     }
     // #[test]    
     // fn it_should_solve_testdata_for_part_2() {
