@@ -127,4 +127,9 @@ mod tests {
         let data = super::parse(&data);
         assert_eq!(super::power_consumption(&data, 5),198);
     }
+    fn it_solves1 () {
+        let result = super::solve1("././data/sample1");
+        assert_eq!(result,738234);
+
+    }
 }
