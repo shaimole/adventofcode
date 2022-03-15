@@ -1,6 +1,8 @@
 use util;
 use std::path::Path;
 
+// there is counting going on, why not return unsigned
+// actually don't use signed at all?
 pub fn solve1<P>(filename: P) -> i32 
 where P: AsRef<Path>,{
     let data = read_data(filename);
