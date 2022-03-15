@@ -3,6 +3,8 @@ use std::path::Path;
 
 // there is counting going on, why not return unsigned
 // actually don't use signed at all?
+// maybe have a look at slices, e.g. smt like data.as_slice()[1..] + zip
+// that gives you pairs and then you can filter and count all in one iterator expression!
 pub fn solve1<P>(filename: P) -> i32 
 where P: AsRef<Path>,{
     let data = read_data(filename);
