@@ -8,7 +8,7 @@ where P: AsRef<Path>,{
    for draw in draws {
        for n in 0..boards.len() {
             boards[n] = boards[n].update(draw);
-            if boards[n].isBingo() {
+            if boards[n].is_bingo() {
                 return boards[n].score() * draw;
             }
        }
@@ -16,8 +16,29 @@ where P: AsRef<Path>,{
    return 1;
 }
 
-pub fn solve2<P>(filename: P) -> i32 
+pub fn solve2<P>(filename: P) -> u16 
 where P: AsRef<Path>,{
+    let draws = read_result_numbers(&filename);
+    let mut boards = read_boards(&filename);
+
+    let mut bingos = [0; 100];
+    for draw in draws {
+        for n in 0..boards.len() {
+             boards[n] = boards[n].update(draw);
+             if boards[n].is_bingo() {
+                bingos[n] = bingos[n] +1;
+                let mut bingo_count = 0;
+                for bingo in bingos {
+                    if bingo >= 1 {
+                        bingo_count = bingo_count + 1;
+                    }
+                }
+                if bingo_count == boards.len() {
+                    return boards[n].score() * draw;
+                }
+            }
+        }
+    }
     return 1;
 }
 
@@ -74,7 +95,7 @@ impl BingoBoard {
         }
     }
 
-    pub fn isBingo(&self) -> bool {
+    pub fn is_bingo(&self) -> bool {
         for row in &self.horizontal_rows {
             if row.len() == 0 {
                 return true;
@@ -148,6 +169,21 @@ mod tests {
         assert_eq!(super::solve1("././data/test"),4512);
     }
 
+     #[test]
+    fn it_should_solve_testdata_for_part_2() {
+        assert_eq!(super::solve2("././data/test"),1924);
+    }
+
+    #[test]
+    fn it_should_solve1() {
+        assert_eq!(super::solve1("././data/sample1"),54275)
+    }
+
+    #[test]
+    fn it_should_solve2() {
+        assert_eq!(super::solve2("././data/sample1"),13158)
+    }
+
     #[test]
     fn board_should_update_correctly() {
         let horizontal_rows = vec![vec![1,2,3,4,5,6]];
@@ -163,7 +199,7 @@ mod tests {
             vertical_rows: vertical_rows,
         };
         board = board.update(1);
-        assert_eq!(board.isBingo(), true);
+        assert_eq!(board.is_bingo(), true);
         assert_eq!(board.score(), 20);
     }
     // #[test]    
