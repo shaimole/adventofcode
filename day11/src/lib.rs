@@ -1,22 +1,148 @@
-use util;
 use std::path::Path;
+
+pub fn solve2() -> u16 {
+   let mut squids = get_data();
+   let mut step = 0;
+   while !synchronized(&squids) {
+      squids = run_step(squids).squids;
+      step = step + 1;
+   }
+   return step;
+}
 
 pub fn solve1<P>(filename: P, steps: u16) -> u16 
 where P: AsRef<Path>,{
-   return 1;
+   let mut squids = get_data();
+   let mut total_flashes = 0;
+   for _n in 0..steps {
+      total_flashes = total_flashes + run_step(squids).flashes;
+      squids = run_step(squids).squids;
+   }
+   return total_flashes;
 }
 
-pub fn solve2<P>(filename: P, steps: u16) -> u16 
-where P: AsRef<Path>,{
-    return 1;
+struct StepResult {
+    squids: [[u8;10];10],
+    flashes: u16
+}
+
+fn synchronized(squids: &[[u8;10];10]) -> bool {
+    for i in 0..10 {
+        for j in 0..10 {
+            if squids[i][j] != 0 {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+fn run_step(squids: [[u8;10];10]) -> StepResult {
+    let mut flashes = 0;
+    let mut squids = increase_energy_level(squids);
+    while squid_is_discharging(&squids) {
+        let flash_result = flash(squids);
+        squids = flash_result.squids;
+        flashes = flashes + flash_result.flashes;
+    }
+    return StepResult {
+        squids: squids,
+        flashes: flashes
+    }
 }
 
 
+fn increase_energy_level(mut squids: [[u8;10];10]) -> [[u8;10];10] {
+    for i in 0..squids.len() {
+        for j in 0..squids[i].len() {
+            squids[i][j] = squids[i][j] + 1;
+        }
+    }
+    return squids;
+}
 
-#[cfg(test)]
-mod tests {
-    fn it_should_read_testdata_as_2_dim_array() {
-        let expected = [
+fn squid_is_discharging(squids: &[[u8;10];10]) -> bool {
+     for i in 0..squids.len() {
+        for j in 0..squids[i].len() {
+            if squids[i][j] >= 10 {
+                return true;
+            }
+            
+        }
+    }
+    return false;
+}
+
+fn flash(mut squids: [[u8;10];10]) -> StepResult {
+    let mut flashes = 0;
+    for i in 0..squids.len() {
+        for j in 0..squids[i].len() {
+            if squids[i][j] >= 10 {
+                squids[i][j] = 0;
+                flashes = flashes + 1;
+                squids = increase_adjecent(squids,i,j);
+            }
+        }
+    }
+    return StepResult {
+        squids: squids,
+        flashes: flashes
+    }
+}
+
+fn increase_adjecent(mut squids: [[u8;10];10], i :usize, j: usize) -> [[u8;10];10] {
+    if i > 0 {
+        if squids[i-1][j] != 0 {
+            squids[i-1][j] = squids[i-1][j] + 1;
+        }
+    }
+    if i < 9 {
+        if squids[i+1][j] != 0 {
+            squids[i+1][j] = squids[i+1][j] + 1;
+        }
+    }
+    if j > 0 {
+        if squids[i][j-1] != 0{
+            squids[i][j-1] = squids[i][j-1] + 1;            
+        }
+       
+    }
+    if j < 9 {
+        if squids[i][j+1] != 0{
+            squids[i][j+1] = squids[i][j+1] + 1;
+        }
+        
+    }
+
+    if j < 9  && i < 9{
+        if squids[i+1][j+1] != 0{
+             squids[i+1][j+1] = squids[i+1][j+1] + 1;            
+        }
+    }
+
+    if j > 0  && i > 0 {
+        if squids[i-1][j-1] != 0{
+            squids[i-1][j-1] = squids[i-1][j-1] + 1;   
+        }
+        
+    }
+    if j > 0  && i < 9 {
+        if squids[i+1][j-1] != 0{
+            squids[i+1][j-1] = squids[i+1][j-1] + 1;   
+        }
+        
+    }
+     if j < 9  && i > 0 {
+        if squids[i-1][j+1] != 0{ 
+              squids[i-1][j+1] = squids[i-1][j+1] + 1;   
+        }
+    }
+    squids
+}
+
+
+fn get_data_sample() -> [[u8;10];10] {
+    return [
             [5,4,8,3,1,4,3,2,2,3],
             [2,7,4,5,8,5,4,7,1,1],
             [5,2,6,4,5,5,6,1,7,3],
@@ -27,13 +153,33 @@ mod tests {
             [6,8,8,2,8,8,1,1,3,4],
             [4,8,4,6,8,4,8,5,5,4],
             [5,2,8,3,7,5,1,5,2,6]
-        ];
-        assert_eq!(super::read_data("././data/test"),expected);
-    }
+    ];
+}
+
+fn get_data() -> [[u8;10];10] {
+    return [
+            [4,7,6,4,7,4,5,7,8,4],
+            [4,6,4,3,4,5,7,1,7,6],
+            [8,3,2,2,6,2,8,4,7,7],
+            [7,6,1,7,1,5,2,5,4,6],
+            [6,1,3,7,5,1,8,1,6,5],
+            [1,5,5,6,7,2,3,1,7,6],
+            [2,1,8,7,8,6,1,8,8,6],
+            [2,5,5,3,4,2,2,6,2,5],
+            [4,8,1,7,5,8,4,6,3,8],
+            [3,7,5,4,2,8,5,6,6,2],
+    ];
+}
+
+#[cfg(test)]
+mod tests {
     #[test]
     fn it_should_solve_testdata_for_part_1() {
-        assert_eq!(super::solve1("././data/test",10),204);
-        assert_eq!(super::solve1("././data/test",10),1656);
+       assert_eq!(super::solve1("././data/test",10),204);
+    }
+    #[test]
+    fn it_should_solve_testdata_for_part_2() {
+       assert_eq!(super::solve2(),517);
     }
 }
  
