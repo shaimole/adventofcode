@@ -3,6 +3,8 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+// do the whole reading of lines from file in one line
+// see also: https://doc.rust-lang.org/rust-by-example/error/iter_result.html#fail-the-entire-operation-with-collect
 pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let file = File::open(filename)?;
