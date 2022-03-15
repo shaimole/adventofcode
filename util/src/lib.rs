@@ -9,7 +9,7 @@ where P: AsRef<Path>, {
     Ok(io::BufReader::new(file).lines())
 }
 
-
+// why not pass the results
 pub fn lines_to_int(file_content: io::Result<io::Lines<io::BufReader<File>>>) -> Vec<i32> {
     let mut converted = Vec::new();
     if let Ok(lines) = file_content{
@@ -22,6 +22,7 @@ pub fn lines_to_int(file_content: io::Result<io::Lines<io::BufReader<File>>>) ->
     return converted;
 }
 
+// don't pass in result
 pub fn split_lines(file_content: io::Result<io::Lines<io::BufReader<File>>>, delimiter: &str) -> Vec<Vec<String>> {
     let mut converted = Vec::new();
     if let Ok(lines) = file_content {
