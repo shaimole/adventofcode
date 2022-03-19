@@ -1,25 +1,16 @@
 use common;
 use std::path::Path;
 
-// there is counting going on, why not return unsigned
-// actually don't use signed at all?
 // maybe have a look at slices, e.g. smt like data.as_slice()[1..] + zip
 // that gives you pairs and then you can filter and count all in one iterator expression!
-pub fn solve1<P>(filename: P) -> i32 
+pub fn solve1<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
     let data = read_data(filename);
-    let mut previous_depth = 0;
-    let mut rise_counter = -1;
-    for depth in data {
-        if depth > previous_depth {
-            rise_counter = rise_counter + 1;
-        }
-        previous_depth = depth;
-    }
-    return rise_counter;
+    let touples = data.iter().zip(data.iter().skip(1));
+    return touples.filter(|(a,b)| a < b).collect::<Vec<(&u32,&u32)>>().len() as u32;
 }
 
-pub fn solve2<P>(filename: P) -> i32 
+pub fn solve2<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
     let data = read_data(filename);
     let mut previous_depth = 0;
@@ -35,10 +26,10 @@ where P: AsRef<Path>,{
 }
 
 
-fn read_data<P>(filename: P) -> Vec<i32> 
+fn read_data<P>(filename: P) -> Vec<u32> 
 where P: AsRef<Path>, {
     let lines = common::read_lines(filename);
-    return common::lines_to_int(lines);
+    return common::lines_to_int(lines).iter().map(|e| *e as u32).collect();
 }
 
 
