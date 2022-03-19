@@ -12,7 +12,7 @@ pub fn solve2() -> u16 {
 
 pub fn solve1<P>(filename: P, steps: u16) -> u16 
 where P: AsRef<Path>,{
-   let mut squids = get_data();
+   let mut squids = get_data_sample();
    let mut total_flashes = 0;
    for _n in 0..steps {
       total_flashes = total_flashes + run_step(squids).flashes;
