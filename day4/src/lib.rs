@@ -1,4 +1,4 @@
-use util;
+use common;
 use std::path::Path;
 
 pub fn solve1<P>(filename: P) -> u16 
@@ -45,8 +45,8 @@ where P: AsRef<Path>,{
 
 fn read_result_numbers<P>(filename: P) -> Vec<u16> 
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    let str_vec = util::split_lines(lines,",")[0].to_vec();
+    let lines = common::read_lines(filename);
+    let str_vec = common::split_lines(lines,",")[0].to_vec();
     let u_vec: Vec<u16> = str_vec.iter().map(|x| x.parse::<u16>().unwrap()).collect();
     return u_vec;
 }
@@ -112,8 +112,8 @@ impl BingoBoard {
 
 fn read_boards<P>(filename: P) -> Vec<BingoBoard>
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    let  mut str_vec = util::split_lines(lines," ").to_vec();
+    let lines = common::read_lines(filename);
+    let  mut str_vec = common::split_lines(lines," ").to_vec();
     str_vec.remove(0); // remove result numbers
     let mut bingo_boards = Vec::new();
     let mut rows = Vec::new();

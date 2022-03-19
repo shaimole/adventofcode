@@ -1,4 +1,4 @@
-use util;
+use common;
 use std::path::Path;
 
 pub fn solve1<P>(filename: P) -> i32 
@@ -54,8 +54,8 @@ where P: AsRef<Path>,{
 
 fn read_data<P>(filename: P) -> Vec<Vec<String>> 
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    return util::split_lines(lines," ");
+    let lines = common::read_lines(filename);
+    return common::split_lines(lines," ");
 }
 
 

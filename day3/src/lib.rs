@@ -1,4 +1,4 @@
-use util;
+use common;
 use std::path::Path;
 
 pub fn solve1<P>(filename: P) -> u32 
@@ -125,8 +125,8 @@ fn get_bit(number: &u32, position: usize) -> bool{
 
 fn read_data<P>(filename: P) -> Vec<Vec<String>>
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    let split = util::split_lines(lines," ");
+    let lines = common::read_lines(filename);
+    let split = common::split_lines(lines," ");
     return split;
 }
 
@@ -134,7 +134,7 @@ where P: AsRef<Path>, {
 fn parse(data: &Vec<Vec<String>>) -> Vec<u32> {
     let mut converted = Vec::new();
     for sequence in data {
-        converted.push(util::string_binary_to_u32(sequence[0].clone()));
+        converted.push(common::string_binary_to_u32(sequence[0].clone()));
     }
     return converted;
 }
@@ -172,8 +172,8 @@ mod tests {
 
      #[test]    
     fn it_calculates_length_of_inputs() {
-        let lines = util::read_lines("././data/test");
-        let split = util::split_lines(lines," ");
+        let lines = common::read_lines("././data/test");
+        let split = common::split_lines(lines," ");
         let set_length = super::get_amount_of_bits(&split);
         assert_eq!(set_length,5)
     }

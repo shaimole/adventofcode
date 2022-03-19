@@ -1,4 +1,4 @@
-use util;
+use common;
 use std::path::Path;
 
 // there is counting going on, why not return unsigned
@@ -37,8 +37,8 @@ where P: AsRef<Path>,{
 
 fn read_data<P>(filename: P) -> Vec<i32> 
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    return util::lines_to_int(lines);
+    let lines = common::read_lines(filename);
+    return common::lines_to_int(lines);
 }
 
 

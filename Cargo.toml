@@ -1,32 +1,10 @@
 [workspace]
 
 members = [
-    "adventofcode",
     "day1",
     "day2",
     "day3",
     "day4",
     "day11",
-    "util"
+    "common"
 ]
-
-# Alternative setup not using workspace:
-# 
-# in Cargo.toml:
-#
-# [package]
-# ...
-# 
-# [lib]
-# name = "common"
-# path = "src/common/lib.rs"
-# 
-# [[bin]]
-# name = "dayX"
-# path = "src/dayX/main.rs"
-# 
-# ... 
-# 
-# in main.rs of any day:
-# 
-# extern crate common;
