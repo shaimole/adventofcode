@@ -12,8 +12,9 @@ where P: AsRef<Path>,{
 pub fn solve2<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
    let data = read_data(filename);
+   let total_bits = get_amount_of_bits(&data);
    let converted_data = parse(&data);
-   return co2_rating(&converted_data) * oxigen_rating(&converted_data);
+   return co2_rating(&converted_data, total_bits as usize) * oxigen_rating(&converted_data, total_bits as usize);
 }
 
 fn power_consumption(data: &Vec<u32>, total_bits: u32) -> u32 {
@@ -48,9 +49,9 @@ fn fill_unset_bits(number: u32, set_bits: u32) -> u32 {
     return filled;
 }
 
-fn oxigen_rating(data: &Vec<u32>) -> u32{
+fn oxigen_rating(data: &Vec<u32>, total_bits: usize) -> u32{
     let mut current_set = data.clone();   
-    for n in (0..12).rev() {
+    for n in (0..total_bits).rev() {
         let amount_of_datapoints = current_set.len() as f32;
         let totals = get_total_amount_of_set_bits(&current_set);
         if totals[31-n] as f32 >= amount_of_datapoints /2.0{
@@ -67,9 +68,9 @@ fn oxigen_rating(data: &Vec<u32>) -> u32{
 }
 
 
-fn co2_rating(data: &Vec<u32>) -> u32{
+fn co2_rating(data: &Vec<u32>, total_bits: usize) -> u32{
     let mut current_set = data.clone();   
-    for n in (0..12).rev() {
+    for n in (0..total_bits).rev() {
         let amount_of_datapoints = current_set.len() as f32;
         let totals = get_total_amount_of_set_bits(&current_set);
         if totals[31-n] as f32 >= amount_of_datapoints /2.0{
@@ -86,8 +87,10 @@ fn co2_rating(data: &Vec<u32>) -> u32{
 
 fn filter_set_by_bit_set(data: Vec<u32>, position: usize) -> Vec<u32>{
     let mut filtered = Vec::new();
+            println!("{:?}",position);
+
     for binary in data {
-        if get_bit(&binary,position as usize) {
+        if common::get_bit(&binary,position as usize) {
             filtered.push(binary);
         }
     }
@@ -97,7 +100,7 @@ fn filter_set_by_bit_set(data: Vec<u32>, position: usize) -> Vec<u32>{
 fn filter_set_by_bit_unset(data: Vec<u32>, position: usize) -> Vec<u32>{
     let mut filtered = Vec::new();
     for binary in data {
-        if !get_bit(&binary,position as usize) {
+        if !common::get_bit(&binary,position as usize) {
             filtered.push(binary);
         }
     }
@@ -108,7 +111,7 @@ fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
   let mut totals: [u32; 32] = [0;32];
     for n  in 0..32 as usize {
         for binary in data {
-            if get_bit(binary, n) {
+            if common::get_bit(binary, n) {
                 totals[n] = totals[n] +1;
             }
         }
@@ -118,9 +121,6 @@ fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
 }
 
 
-fn get_bit(number: &u32, position: usize) -> bool{
-    return number & (1 << position) != 0 
-}
 
 
 fn read_data<P>(filename: P) -> Vec<Vec<String>>
@@ -199,15 +199,15 @@ mod tests {
     fn it_calcs_oxigen() {
         let data = super::read_data("././data/test");
         let data = super::parse(&data);
-        let oxigen_rating = super::oxigen_rating(&data);
+        let oxigen_rating = super::oxigen_rating(&data,5);
         assert_eq!(oxigen_rating,23);
     }
 
-        #[test]
+    #[test]
     fn it_cals_co2() {
         let data = super::read_data("././data/test");
         let data = super::parse(&data);
-        let oxigen_rating = super::co2_rating(&data);
-        assert_eq!(oxigen_rating,10);
+        let co2_rating = super::co2_rating(&data,5);
+        assert_eq!(co2_rating,10);
     }
 }
