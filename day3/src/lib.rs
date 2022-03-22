@@ -87,8 +87,6 @@ fn co2_rating(data: &Vec<u32>, total_bits: usize) -> u32{
 
 fn filter_set_by_bit_set(data: Vec<u32>, position: usize) -> Vec<u32>{
     let mut filtered = Vec::new();
-            println!("{:?}",position);
-
     for binary in data {
         if common::get_bit(&binary,position as usize) {
             filtered.push(binary);
