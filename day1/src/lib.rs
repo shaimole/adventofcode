@@ -24,11 +24,11 @@ fn get_maximum_consecutive_depth_increase(data: Vec<u32>) -> u32 {
 pub fn solve2<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
     let data = parse_data(filename);
-    let grouped = group_depths_in_triples(data);
+    let grouped = group_depths_in_triplets(data);
     return get_maximum_consecutive_depth_increase(grouped);
 }
 
-fn group_depths_in_triples(data: Vec<u32>) -> Vec<u32> {
+fn group_depths_in_triplets(data: Vec<u32>) -> Vec<u32> {
     let mut grouped = vec![]; 
     for i in 2..data.len() {
         grouped.push(data[i-2] + data[i-1] + data[i]);
