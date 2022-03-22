@@ -1,70 +1,85 @@
 use common;
 use std::path::Path;
 
+
 pub fn solve1<P>(filename: P) -> i32 
 where P: AsRef<Path>,{
-    let data = read_data(filename);
-    let mut current_depth = 0;
-    let mut current_distance = 0;
+    let data = parse_data(filename);
+    let mut submarine = create_submarine();
     for movement in data {
-        let direction = &movement[0];
-        let distance = movement[1].parse::<i32>().unwrap();
-        if distance == 0 {
-            continue;
-        }
-        if direction == "forward" {
-            current_distance = current_distance + distance;
-        }
-        if direction == "up" {
-            current_depth =  current_depth - distance;
-        }
-        if direction == "down" {
-            current_depth = current_depth + distance;
-        }
+        submarine = submarine.travel(&movement[0], movement[1].parse::<i32>().unwrap());
     }
-    return current_depth * current_distance;
+    return submarine.depth * submarine.distance;
 }
 
-pub fn solve2<P>(filename: P) -> i32 
-where P: AsRef<Path>,{
-    let data = read_data(filename);
-    let mut current_depth = 0;
-    let mut current_distance = 0;
-    let mut current_aim = 0;
-    for movement in data {
-        let direction = &movement[0];
-        let distance = movement[1].parse::<i32>().unwrap();
-        if distance == 0 {
-            continue;
-        }
-        if direction == "forward" {
-            current_distance = current_distance + distance;
-            current_depth = current_depth + current_aim * distance;
-        }
-        if direction == "up" {
-            current_aim =  current_aim - distance;
-        }
-        if direction == "down" {
-            current_aim = current_aim + distance;
-        }
-    }
-    return current_depth * current_distance;
-}
-
-
-fn read_data<P>(filename: P) -> Vec<Vec<String>> 
+fn parse_data<P>(filename: P) -> Vec<Vec<String>> 
 where P: AsRef<Path>, {
     let lines = common::read_lines(filename);
     return common::split_lines(lines," ");
 }
 
+fn create_submarine() -> Submarine {
+    return Submarine {
+        depth : 0,
+        distance: 0,
+        aim : 0
+    }
+}
+
+pub fn solve2<P>(filename: P) -> i32 
+where P: AsRef<Path>,{
+    let data = parse_data(filename);
+    let mut submarine = create_submarine();
+    for movement in data {
+        submarine = submarine.travel_with_aim(&movement[0], movement[1].parse::<i32>().unwrap());
+    }
+    return submarine.depth * submarine.distance;
+}
+
+
+struct Submarine {
+    depth: i32,
+    distance: i32,
+    aim: i32
+}
+
+impl Submarine {
+
+    fn travel_with_aim(mut self, direction: &str, distance: i32) -> Submarine {
+        if distance == 0 {
+            return self;
+        } else if direction == "forward" {
+            self.distance += distance;
+            self.depth += self.aim * distance;
+         }else if direction == "up" {
+            self.aim -= distance;
+        } else if direction == "down" {
+            self.aim += distance;
+        }
+        return self;
+    }
+
+    fn travel(mut self, direction: &str, distance: i32) -> Submarine {
+        if distance == 0 {
+            return self
+        }else if direction == "forward" {
+            self.distance += distance;
+        }else if direction == "up" {
+            self.depth -= distance;
+        }else if direction == "down" {
+            self.depth += distance;
+        }
+        return self;
+    }
+
+}
 
 
 #[cfg(test)]
 mod tests {
     #[test]
     fn it_should_read_the_testfile() {
-        let result = super::read_data("././data/test");
+        let result = super::parse_data("././data/test");
         assert_eq!(result.len(),6);
     }
 
