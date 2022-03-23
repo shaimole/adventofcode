@@ -1,4 +1,3 @@
-use std::path::Path;
 
 pub fn solve2() -> u16 {
    let mut squids = get_data();
@@ -10,13 +9,13 @@ pub fn solve2() -> u16 {
    return step;
 }
 
-pub fn solve1<P>(filename: P, steps: u16) -> u16 
-where P: AsRef<Path>,{
+pub fn solve1(steps: u16) -> u16 {
    let mut squids = get_data_sample();
    let mut total_flashes = 0;
    for _n in 0..steps {
-      total_flashes = total_flashes + run_step(squids).flashes;
-      squids = run_step(squids).squids;
+      let step_result = run_step(squids);
+      total_flashes += step_result.flashes;
+      squids = step_result.squids;
    }
    return total_flashes;
 }
@@ -27,8 +26,9 @@ struct StepResult {
 }
 
 fn synchronized(squids: &[[u8;10];10]) -> bool {
-    for i in 0..10 {
-        for j in 0..10 {
+    const SQUID_GRID_SIZE: usize = 10;
+    for i in 0..SQUID_GRID_SIZE {
+        for j in 0..SQUID_GRID_SIZE {
             if squids[i][j] != 0 {
                 return false;
             }
@@ -37,13 +37,13 @@ fn synchronized(squids: &[[u8;10];10]) -> bool {
     return true;
 }
 
-fn run_step(squids: [[u8;10];10]) -> StepResult {
+fn run_step(mut squids: [[u8;10];10]) -> StepResult {
     let mut flashes = 0;
-    let mut squids = increase_energy_level(squids);
+    squids = increase_energy_level(squids);
     while squid_is_discharging(&squids) {
         let flash_result = flash(squids);
         squids = flash_result.squids;
-        flashes = flashes + flash_result.flashes;
+        flashes += flash_result.flashes;
     }
     return StepResult {
         squids: squids,
@@ -175,7 +175,7 @@ fn get_data() -> [[u8;10];10] {
 mod tests {
     #[test]
     fn it_should_solve_testdata_for_part_1() {
-       assert_eq!(super::solve1("././data/test",10),204);
+       assert_eq!(super::solve1(10),204);
     }
     #[test]
     fn it_should_solve_testdata_for_part_2() {

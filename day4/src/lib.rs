@@ -73,7 +73,7 @@ where P: AsRef<Path>,{
     let draws = read_draws(&filename);
     let mut boards = parse_boards(&filename);
 
-    let mut bingos = [0; 100];
+    let mut bingos = [0; 10000];
     for draw in draws {
         for n in 0..boards.len() {
              boards[n] = boards[n].update(draw);
