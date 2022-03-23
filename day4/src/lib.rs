@@ -3,8 +3,8 @@ use std::path::Path;
 
 pub fn solve1<P>(filename: P) -> u16 
 where P: AsRef<Path>,{
-   let draws = read_result_numbers(&filename);
-   let mut boards = read_boards(&filename);
+   let draws = read_draws(&filename);
+   let mut boards = parse_boards(&filename);
    for draw in draws {
        for n in 0..boards.len() {
             boards[n] = boards[n].update(draw);
@@ -16,10 +16,62 @@ where P: AsRef<Path>,{
    return 1;
 }
 
+fn read_draws<P>(filename: P) -> Vec<u16> 
+where P: AsRef<Path>, {
+    let lines = common::read_lines(filename);
+    let str_vec = common::split_lines(lines,",")[0].to_vec();
+    let u_vec: Vec<u16> = str_vec.iter().map(|x| x.parse::<u16>().unwrap()).collect();
+    return u_vec;
+}
+
+
+fn parse_boards<P>(filename: P) -> Vec<BingoBoard>
+where P: AsRef<Path>, {
+    const BOARD_SIZE: usize = 5;
+    let boards_input = get_boards_data(filename);
+    let mut bingo_boards = vec![];
+    for board_rows in boards_input {
+        let mut vertical_rows: Vec<Vec<u16>> = vec![vec![]; BOARD_SIZE];
+        for i in 0..BOARD_SIZE {
+            for n in 0..BOARD_SIZE {
+                vertical_rows[n].push(board_rows[i][n]);
+            }
+        }
+        let board = BingoBoard {
+            horizontal_rows: board_rows,
+            vertical_rows: vertical_rows,
+        };
+        bingo_boards.push(board);
+    }
+    return bingo_boards;
+}
+
+fn get_boards_data<P>(filename: P) -> Vec<Vec<Vec<u16>>> 
+where P: AsRef<Path>, {
+    let mut lines = common::read_lines(filename);
+    lines.remove(0);  // remove drawn numbers line
+    let split_lines = common::split_lines(lines," ").to_vec();
+    let lines_no_blanks = split_lines.iter().filter(|line|  line.len() > 2).collect::<Vec<_>>();
+    let mut boards = vec![];
+    let mut single_board_rows = vec![];
+    for line in lines_no_blanks {
+        let numbers_of_row : Vec<u16> = line.iter()
+            .filter(|number| number != &"")
+            .map(|number| number.parse::<u16>().unwrap()).collect();
+        single_board_rows.push(numbers_of_row);
+        
+        if single_board_rows.len() == 5 {
+            boards.push(single_board_rows);
+            single_board_rows = vec![];
+        }
+    }
+    return boards;
+}
+
 pub fn solve2<P>(filename: P) -> u16 
 where P: AsRef<Path>,{
-    let draws = read_result_numbers(&filename);
-    let mut boards = read_boards(&filename);
+    let draws = read_draws(&filename);
+    let mut boards = parse_boards(&filename);
 
     let mut bingos = [0; 100];
     for draw in draws {
@@ -43,13 +95,7 @@ where P: AsRef<Path>,{
 }
 
 
-fn read_result_numbers<P>(filename: P) -> Vec<u16> 
-where P: AsRef<Path>, {
-    let lines = common::read_lines(filename);
-    let str_vec = common::split_lines(lines,",")[0].to_vec();
-    let u_vec: Vec<u16> = str_vec.iter().map(|x| x.parse::<u16>().unwrap()).collect();
-    return u_vec;
-}
+
 
 struct BingoBoard {
     horizontal_rows: Vec<Vec<u16>>,
@@ -110,41 +156,7 @@ impl BingoBoard {
     }
 }
 
-fn read_boards<P>(filename: P) -> Vec<BingoBoard>
-where P: AsRef<Path>, {
-    let lines = common::read_lines(filename);
-    let  mut str_vec = common::split_lines(lines," ").to_vec();
-    str_vec.remove(0); // remove result numbers
-    let mut bingo_boards = Vec::new();
-    let mut rows = Vec::new();
-    for line in str_vec {
-        if line.len() < 2 {
-            continue;
-        }
-        let numbers: Vec<u16> = line.iter().filter(|x| x != &"").map(|x| x.parse::<u16>().unwrap()).collect();
-        rows.push(numbers);
-        if rows.len() == 5 {
-            let mut vertical_rows: Vec<Vec<u16>> =Vec::new();
-            for _i in 0..rows.len() {
-                let empty = Vec::new();
-                vertical_rows.push(empty);
-            }
-            for i in 0..rows.len() {
-                for n in 0..rows[i].len() {
-                    vertical_rows[n].push(rows[i][n]);
-                }
-            }
-            rows = rows.clone();
-            let board = BingoBoard {
-                horizontal_rows: rows,
-                vertical_rows: vertical_rows,
-            };
-            bingo_boards.push(board);
-            rows = Vec::new();
-        }
-    }
-    return bingo_boards;
-}
+
 
 
 
@@ -152,13 +164,13 @@ where P: AsRef<Path>, {
 mod tests {
     #[test]
     fn it_should_read_the_result_numbers() {
-        let result = super::read_result_numbers("././data/test");
+        let result = super::read_draws("././data/test");
         assert_eq!(result.len(),27);
     }
 
     #[test]
     fn it_should_read_the_boards() {
-         let result = super::read_boards("././data/test");
+         let result = super::parse_boards("././data/test");
         assert_eq!(result.len(),3);
         assert_eq!(result[0].horizontal_rows.len(),5);
         assert_eq!(result[0].vertical_rows.len(),5);
@@ -202,8 +214,4 @@ mod tests {
         assert_eq!(board.is_bingo(), true);
         assert_eq!(board.score(), 20);
     }
-    // #[test]    
-    // fn it_should_solve_testdata_for_part_2() {
-    //     assert_eq!(super::solve2("././data/test"),900);
-    // }
 }

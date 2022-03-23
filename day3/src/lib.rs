@@ -28,6 +28,20 @@ fn power_consumption(binaries_set: BinariesSet) -> u32 {
     return gamma_rate * epsilon_rate;
 }
 
+
+fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
+    let mut totals: [u32; 32] = [0;32];
+      for n  in 0..32 as usize {
+          for binary in data {
+              if common::get_bit(binary, n) {
+                  totals[n] += 1;
+              }
+          }
+      }
+      totals.reverse();
+      return totals;
+  }
+
 fn gamma_rate(bits: [u32;32], length: usize) -> u32 {
     let mut gamma_rate:u32 = 0;
     for n in (0..32).rev() {
@@ -112,19 +126,6 @@ fn filter_set_by_bit_unset(data: Vec<u32>, position: usize) -> Vec<u32>{
     }
     return filtered;
 }
-
-fn get_total_amount_of_set_bits(data: &Vec<u32>) -> [u32;32] {
-    let mut totals: [u32; 32] = [0;32];
-      for n  in 0..32 as usize {
-          for binary in data {
-              if common::get_bit(binary, n) {
-                  totals[n] = totals[n] +1;
-              }
-          }
-      }
-      totals.reverse();
-      return totals;
-  }
 
 
 
