@@ -76,26 +76,50 @@ fn traverse(current_cave: &String, target_cave: &String, visited : &Vec<String>,
     return total_paths;
 }
 
-
-fn set_difference<T: Ord + Clone>(mut slice: &[T], mut remove: &[T]) -> Vec<T> {
-    let mut out = Vec::new();
-    while let (Some(sf), Some(rf)) = (slice.first(), remove.first()) {
-        if sf == rf {
-            slice = &slice[1..];
-            remove = &remove[1..];
-        } else if sf < rf {
-            out.push(sf.clone());
-            slice = &slice[1..];
-        } else {
-            remove = &remove[1..];
-        }
+fn traverse_2(current_cave: &String, target_cave: &String, visited_once : &Vec<String>, caves: HashMap<String, Vec<String>>, visited_twice: &Vec<String>) -> u32 {
+    if current_cave == target_cave {
+        return 1;
     }
-    out
+    let mut new_visited_once = visited_once.to_owned();
+    let mut new_visited_twice = visited_twice.to_owned();
+
+    let is_big_cave = current_cave.chars().nth(0).unwrap().is_uppercase();
+
+    if !is_big_cave && new_visited_once.contains(current_cave){
+        new_visited_twice.push(current_cave.to_owned());
+    }
+    if !is_big_cave {
+        new_visited_once.push(current_cave.to_owned());
+    }
+
+
+    let mut total_paths = 0;
+    match caves.get(current_cave) {
+            Some(connections) => {
+                for connection in connections.to_owned() {
+                    if visited_twice.contains(&connection) {
+                        continue;
+                    }
+                    if ( visited_once.contains(&connection) && new_visited_twice.len() > 0 ) || connection == "start"  {
+                        continue;
+                    }
+                    total_paths += traverse_2(&connection, target_cave, &new_visited_once, caves.to_owned(), &new_visited_twice);
+                    
+                }
+            },
+            None => {
+                return total_paths;
+            }
+        }
+    
+    return total_paths;
 }
 
-pub fn solve2<P>(filename: P) -> u16 
+
+pub fn solve2<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
-    1
+    let caves = parse_cave(filename);
+    return traverse_2(&"start".to_string(), &"end".to_string(), &vec![], caves, &vec![]);
 }
  
 
@@ -127,6 +151,22 @@ mod tests {
         }
     }
     #[test]
+    fn it_should_solve_first_test_case_part2() {
+        assert_eq!(super::solve2("././data/test"),36)
+    }
+
+    #[test]
+    fn it_should_solve_second_test_case_part2() {
+        assert_eq!(super::solve2("././data/test2"),103)
+    }
+
+    #[test]
+    fn it_should_solve_third_test_case_part2() {
+        assert_eq!(super::solve2("././data/test3"),3509)
+    }
+
+
+    #[test]
     fn it_should_solve_first_test_case() {
         assert_eq!(super::solve1("././data/test"),10)
     }
@@ -136,8 +176,17 @@ mod tests {
         assert_eq!(super::solve1("././data/test2"),19)
     }
 
-        #[test]
+    #[test]
     fn it_should_solve_third_test_case() {
         assert_eq!(super::solve1("././data/test3"),226)
+    }
+
+    #[test]
+    fn it_should_solve_part_1() {
+        assert_eq!(super::solve1("././data/sample1"),3679)
+    }
+    #[test]
+    fn it_should_solve_part_2() {
+        assert_eq!(super::solve2("././data/sample1"),107395)
     }
 }
