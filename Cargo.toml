@@ -1,11 +1,10 @@
 [workspace]
 
 members = [
-    "adventofcode",
     "day1",
     "day2",
     "day3",
     "day4",
     "day11",
-    "util"
+    "common"
 ]

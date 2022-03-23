@@ -3,51 +3,40 @@
 version = 3
 
 [[package]]
-name = "adventofcode"
+name = "common"
 version = "0.1.0"
-dependencies = [
- "day1",
- "day11",
- "day2",
- "day3",
- "day4",
-]
 
 [[package]]
 name = "day1"
 version = "0.1.0"
 dependencies = [
- "util",
+ "common",
 ]
 
 [[package]]
 name = "day11"
 version = "0.1.0"
 dependencies = [
- "util",
+ "common",
 ]
 
 [[package]]
 name = "day2"
 version = "0.1.0"
 dependencies = [
- "util",
+ "common",
 ]
 
 [[package]]
 name = "day3"
 version = "0.1.0"
 dependencies = [
- "util",
+ "common",
 ]
 
 [[package]]
 name = "day4"
 version = "0.1.0"
 dependencies = [
- "util",
+ "common",
 ]
-
-[[package]]
-name = "util"
-version = "0.1.0"

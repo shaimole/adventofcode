@@ -1,41 +1,41 @@
-use util;
+use common;
 use std::path::Path;
 
-pub fn solve1<P>(filename: P) -> i32 
+// maybe have a look at slices, e.g. smt like data.as_slice()[1..] + zip
+// that gives you pairs and then you can filter and count all in one iterator expression!
+pub fn solve1<P>(filename: P) -> u32 
 where P: AsRef<Path>,{
-    let data = read_data(filename);
-    let mut previous_depth = 0;
-    let mut rise_counter = -1;
-    for depth in data {
-        if depth > previous_depth {
-            rise_counter = rise_counter + 1;
-        }
-        previous_depth = depth;
-    }
-    return rise_counter;
+    let data = parse_data(filename);
+    return get_maximum_consecutive_depth_increase(data)
 }
 
-pub fn solve2<P>(filename: P) -> i32 
-where P: AsRef<Path>,{
-    let data = read_data(filename);
-    let mut previous_depth = 0;
-    let mut rise_counter = 0;
-    for i in 3..data.len() {
-        let depth = data[i-2] + data[i-1] + data[i];
-         if depth > previous_depth {
-            rise_counter = rise_counter + 1;
-        }
-        previous_depth = depth;
-    }
-    return rise_counter;
-}
-
-
-fn read_data<P>(filename: P) -> Vec<i32> 
+fn parse_data<P>(filename: P) -> Vec<u32> 
 where P: AsRef<Path>, {
-    let lines = util::read_lines(filename);
-    return util::lines_to_int(lines);
+    let lines = common::read_lines(filename);
+    return common::lines_to_int(lines).iter().map(|e| *e as u32).collect();
 }
+
+fn get_maximum_consecutive_depth_increase(data: Vec<u32>) -> u32 {
+    let touples = data.iter().zip(data.iter().skip(1));
+    return touples.filter(|(prev_depth, current_depth)| prev_depth < current_depth)
+        .collect::<Vec<(&u32,&u32)>>().len() as u32;
+}
+
+pub fn solve2<P>(filename: P) -> u32 
+where P: AsRef<Path>,{
+    let data = parse_data(filename);
+    let grouped = group_depths_in_triplets(data);
+    return get_maximum_consecutive_depth_increase(grouped);
+}
+
+fn group_depths_in_triplets(data: Vec<u32>) -> Vec<u32> {
+    let mut grouped = vec![]; 
+    for i in 2..data.len() {
+        grouped.push(data[i-2] + data[i-1] + data[i]);
+    }
+    return grouped;
+}
+
 
 
 
@@ -43,7 +43,7 @@ where P: AsRef<Path>, {
 mod tests {
     #[test]
     fn it_should_read_the_testfile() {
-        let result = super::read_data("././data/test");
+        let result = super::parse_data("././data/test");
         assert_eq!(result.len(),10);
     }
 
@@ -55,5 +55,15 @@ mod tests {
     #[test]    
     fn it_should_solve_testdata_for_part_2() {
         assert_eq!(super::solve2("././data/test"),5);
+    }
+
+       #[test]
+    fn it_should_solve_part_1() {
+        assert_eq!(super::solve1("././data/sample1"),1154);
+    }
+
+    #[test]    
+    fn it_should_solve_part_2() {
+        assert_eq!(super::solve2("././data/sample1"),1127);
     }
 }
