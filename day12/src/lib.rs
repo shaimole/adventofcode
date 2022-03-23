@@ -1,9 +1,100 @@
- pub fn solve1() -> u16 {
-    1
- }
+use common;
+use std::collections::HashMap;
+use std::path::Path;
+
+pub fn solve1<P>(filename: P) -> u16 
+ where P: AsRef<Path>,{
+    let caves = parse_cave(filename);
+    return traverse(&"start".to_string(), &"end".to_string(), &vec![], caves);
+}
+
+fn parse_cave<P>(filename: P) -> HashMap<String, Vec<String>> 
+where P: AsRef<Path>, {
+    let lines = common::read_lines(filename);
+    let connections_between_caves = common::split_lines(lines, "-");
+    let mut caves = init_edges(HashMap::new(), &connections_between_caves);
+    caves = init_edges_reverse(caves, &connections_between_caves);
+    return caves;
+}
+
+fn init_edges(mut caves: HashMap<String, Vec<String>>, connections: &Vec<Vec<String>>) -> HashMap<String, Vec<String>> {
+    for connection in connections {
+        let origin = connection[0].to_owned();
+        let destination = connection[1].to_owned();
+        match caves.get_mut(&origin) {
+            Some(connections) => {
+                connections.push(destination);
+            },
+            None => {
+                caves.insert(origin, vec![destination]);
+            }
+        }
+    }
+    return caves;
+}
+
+fn init_edges_reverse(mut caves: HashMap<String, Vec<String>>, connections: &Vec<Vec<String>>) -> HashMap<String, Vec<String>> {
+    for connection in connections {
+        let origin = connection[0].to_owned();
+        let destination = connection[1].to_owned();
+        match caves.get_mut(&destination) {
+            Some(connections) => {
+                connections.push(origin);
+            },
+            None => {
+                caves.insert(destination, vec![origin]);
+            }
+        }
+    }
+    return caves;
+}
+
+fn traverse(current_cave: &String, target_cave: &String, visited : &Vec<String>, caves: HashMap<String, Vec<String>>) -> u16 {
+    if current_cave == target_cave {
+        return 1;
+    }
+    let mut new_visited = visited.to_owned();
+    let is_big_cave = current_cave.chars().nth(0).unwrap().is_uppercase();
+    if !is_big_cave {
+        new_visited.push(current_cave.to_owned());
+    }
+    let mut total_paths = 0;
+    match caves.get(current_cave) {
+            Some(connections) => {
+                for connection in connections.to_owned() {
+                    if visited.contains(&connection) {
+                        continue;
+                    }
+                    total_paths += traverse(&connection, target_cave, &new_visited,caves.to_owned());
+                }
+            },
+            None => {
+                return total_paths;
+            }
+        }
+    
+    return total_paths;
+}
 
 
-pub fn solve2() -> u16 {
+fn set_difference<T: Ord + Clone>(mut slice: &[T], mut remove: &[T]) -> Vec<T> {
+    let mut out = Vec::new();
+    while let (Some(sf), Some(rf)) = (slice.first(), remove.first()) {
+        if sf == rf {
+            slice = &slice[1..];
+            remove = &remove[1..];
+        } else if sf < rf {
+            out.push(sf.clone());
+            slice = &slice[1..];
+        } else {
+            remove = &remove[1..];
+        }
+    }
+    out
+}
+
+pub fn solve2<P>(filename: P) -> u16 
+where P: AsRef<Path>,{
     1
 }
  
@@ -11,6 +102,30 @@ pub fn solve2() -> u16 {
 #[cfg(test)]
 mod tests {
 
+    #[test]
+    fn it_should_parse_data_correctly() {
+        let cave = super::parse_cave("././data/test");
+        match cave.get("start") {
+            Some(connections) => {
+                assert_eq!(connections.contains(&String::from("A")),true);
+                assert_eq!(connections.contains(&String::from("b")),true);
+            },
+            None => {
+                assert_eq!(true,false)
+            }
+        }
+        match cave.get("A") {
+            Some(connections) => {
+                assert_eq!(connections.contains(&String::from("start")),true);
+                assert_eq!(connections.contains(&String::from("end")),true);
+                assert_eq!(connections.contains(&String::from("b")),true);
+                assert_eq!(connections.contains(&String::from("c")),true);
+            },
+            None => {
+                assert_eq!(true,false)
+            }
+        }
+    }
     #[test]
     fn it_should_solve_first_test_case() {
         assert_eq!(super::solve1("././data/test"),10)
