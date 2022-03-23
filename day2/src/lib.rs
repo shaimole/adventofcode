@@ -31,7 +31,7 @@ where P: AsRef<Path>,{
     let data = parse_data(filename);
     let mut submarine = create_submarine();
     for movement in data {
-        submarine = submarine.travel_with_aim(&movement[0], movement[1].parse::<i32>().unwrap());
+        submarine = submarine.aim_and_travel(&movement[0], movement[1].parse::<i32>().unwrap());
     }
     return submarine.depth * submarine.distance;
 }
@@ -45,7 +45,7 @@ struct Submarine {
 
 impl Submarine {
 
-    fn travel_with_aim(mut self, direction: &str, distance: i32) -> Submarine {
+    fn aim_and_travel(mut self, direction: &str, distance: i32) -> Submarine {
         if distance == 0 {
             return self;
         } else if direction == "forward" {

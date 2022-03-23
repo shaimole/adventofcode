@@ -24,7 +24,7 @@ pub fn get_bit(number: &u32, position: usize) -> bool{
     return number & (1 << position) != 0
 }
 
-pub fn string_binary_to_u32(zeros_and_ones: String) -> u32 {
+pub fn string_binary_to_u32(zeros_and_ones: &String) -> u32 {
     let mut binary_digit =  zeros_and_ones.chars().count();
     let mut real_num: u32 = 0;
     for c in zeros_and_ones.chars() { 
@@ -70,7 +70,8 @@ mod tests {
 
     #[test] 
     fn it_converts_string_to_u32() {
-        let converted = super::string_binary_to_u32("0101".to_string());
+        let string = "0101".to_string();
+        let converted = super::string_binary_to_u32(&string);
         assert_eq!(converted,5);
     }
 
