@@ -14,7 +14,8 @@ where
 fn points_after_fold(input: Input) -> u16
 {
     if input.folds.len() == 0 {
-       
+           println!("{:?}", input.points);
+        
         return input.points.len() as u16;
     }
     return points_after_fold(fold(input));
@@ -23,8 +24,6 @@ fn points_after_fold(input: Input) -> u16
 fn fold(mut input: Input) -> Input 
 {
     let fold_to_do = input.folds.first().unwrap();
-    println!("{:?}", input.points);
-    println!("{:?}", fold_to_do);
     if fold_to_do.direction == 'y' {
         input.points = input.points.iter().map(|point| {
             if point[1] > fold_to_do.position {
@@ -158,5 +157,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_solve_part_2() {}
+    fn it_should_solve_part_2() {
+         assert_eq!(super::solve1("././data/input2"), 100) // did visulization with python and online compiler
+    }
 }
