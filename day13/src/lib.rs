@@ -12,9 +12,27 @@ pub fn parseData<P>(filename: P) -> Input
 where
     P: AsRef<Path>,
 {
+    let mut positions = common::read_lines(filename);
+    let blank_line_pos = positions.iter().position(|line| line == "").unwrap();
+    let second_part = positions.split_off(blank_line_pos);
+    let inputs = second_part.iter().filter(|line| !line.is_empty()).collect::<Vec<&String>>();
+    let split_positions = common::split_lines(positions, ",");
     return Input {
-        points: vec![],
-        folds: vec![],
+        points: split_positions.iter()
+        .map(|position| 
+            [
+                position[0].parse().unwrap(),
+                position[1].parse().unwrap()
+            ]
+        ).collect(),
+        folds: inputs.iter()
+        .map(|input| {
+            return Fold {
+             direction: input.chars().nth(11).unwrap(),
+             position: input.chars().nth(13).unwrap().to_digit(10).unwrap()   
+            }
+        }
+        ).collect(),
     };
 }
 
@@ -28,7 +46,7 @@ where
 #[derive(Debug)]
 pub struct Fold {
     direction: char,
-    position: u8,
+    position: u32
 }
 impl PartialEq for Fold {
     fn eq(&self, other: &Self) -> bool {
@@ -53,22 +71,22 @@ mod tests {
         let inputs = super::Input {
             points: vec![
                 [6, 10],
-                [0, 15],
-                [9, 11],
-                [0, 3],
-                [10, 5],
-                [4, 12],
-                [6, 0],
-                [6, 13],
-                [4, 1],
                 [0, 14],
-                [10, 13],
+                [9, 10],
+                [0, 3],
+                [10, 4],
+                [4, 11],
+                [6, 0],
+                [6, 12],
+                [4, 1],
+                [0, 13],
+                [10, 12],
                 [3, 4],
                 [3, 0],
                 [8, 4],
-                [1, 11],
-                [2, 15],
-                [8, 11],
+                [1, 10],
+                [2, 14],
+                [8, 10],
                 [9, 0],
             ],
             folds: vec![
