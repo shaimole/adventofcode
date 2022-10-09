@@ -1,14 +1,54 @@
-use common;
 use std::path::Path;
+use std::collections::HashSet;
+
+
 
 pub fn solve1<P>(filename: P) -> u16
 where
     P: AsRef<Path>,
 {
-    return 1;
+    let input = parse_data(filename);
+    return points_after_fold(input);
 }
 
-pub fn parseData<P>(filename: P) -> Input
+fn points_after_fold(input: Input) -> u16
+{
+    if input.folds.len() == 0 {
+       
+        return input.points.len() as u16;
+    }
+    return points_after_fold(fold(input));
+}
+
+fn fold(mut input: Input) -> Input 
+{
+    let fold_to_do = input.folds.first().unwrap();
+    println!("{:?}", input.points);
+    println!("{:?}", fold_to_do);
+    if fold_to_do.direction == 'y' {
+        input.points = input.points.iter().map(|point| {
+            if point[1] > fold_to_do.position {
+                return [point[0], fold_to_do.position - (point[1] - fold_to_do.position)]
+            }
+            return [point[0], point[1]];
+        }).collect::<Vec<[u32;2]>>();
+    }
+    if fold_to_do.direction == 'x' {
+        input.points = input.points.iter().map(|point| {
+            if point[0] > fold_to_do.position  {
+                return [ fold_to_do.position - (point[0] - fold_to_do.position) ,point[1]];
+            }
+            return [point[0], point[1]];
+        }).collect::<Vec<[u32;2]>>();
+    }
+    input.folds.remove(0);
+    let mut uniques = HashSet::new();
+    input.points.retain(|e| uniques.insert(*e));
+    
+    return input;
+}
+
+pub fn parse_data<P>(filename: P) -> Input
 where
     P: AsRef<Path>,
 {
@@ -27,10 +67,12 @@ where
         ).collect(),
         folds: inputs.iter()
         .map(|input| {
-            return Fold {
+            let split = input.split("=").map(|part| part.to_string()).collect::<Vec<String>>();
+            let fold = Fold {
              direction: input.chars().nth(11).unwrap(),
-             position: input.chars().nth(13).unwrap().to_digit(10).unwrap()   
-            }
+             position:  split[1].parse().unwrap()
+            };
+            return fold;
         }
         ).collect(),
     };
@@ -55,7 +97,7 @@ impl PartialEq for Fold {
 }
 #[derive(Debug)]
 pub struct Input {
-    points: Vec<[u8; 2]>,
+    points: Vec<[u32; 2]>,
     folds: Vec<Fold>,
 }
 impl PartialEq for Input {
@@ -65,7 +107,6 @@ impl PartialEq for Input {
 }
 #[cfg(test)]
 mod tests {
-
     #[test]
     fn it_should_parse_data_correctly() {
         let inputs = super::Input {
@@ -100,14 +141,21 @@ mod tests {
                 },
             ],
         };
-
-        assert_eq!(super::parseData("././data/sample"), inputs);
+        assert_eq!(super::parse_data("././data/sample"), inputs);
     }
     #[test]
     fn it_should_solve_sample() {
-        assert_eq!(super::solve1("././data/sample"), 17)
+        assert_eq!(super::solve1("././data/sample"), 16)
     }
-    fn it_should_solve_part_1() {}
+    #[test]
+    fn it_should_solve_sample2() {
+        assert_eq!(super::solve1("././data/sample2"), 17)
+    }
+
+    #[test]
+    fn it_should_solve_part_1() {
+         assert_eq!(super::solve1("././data/input1"), 788)
+    }
 
     #[test]
     fn it_should_solve_part_2() {}
