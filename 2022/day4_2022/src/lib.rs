@@ -21,7 +21,9 @@ mod tests {
 
     #[test]
     fn it_should_determine_if_one_range_contains_another() {
-        assert_eq!(super::is_range_in_range((2..8),(3..7)),true);
+        assert_eq!(super::is_range_in_range(2..8,3..7),true);
+        assert_eq!(super::is_range_in_range(2..3,3..7),false);
+        assert_eq!(super::is_range_in_range(3..7,2..8),false);
     }
     #[test]
     fn it_should_solve_sample() {
