@@ -12,18 +12,27 @@ where P: AsRef<Path>, {
     0
 }
 
-pub fn is_range_in_range(container: Range<u32>, target: Range<u32>) -> bool {
+pub fn is_range_in_range(container: &Range<u32>, target: &Range<u32>) -> bool {
     container.contains(&target.start) && container.contains(&target.end)
 }
-
+pub fn is_included_in_range(a: &Range<u32>, b: &Range<u32>) -> bool {
+    is_range_in_range(a,b) || is_range_in_range(b,a)
+}
 #[cfg(test)]
 mod tests {
 
     #[test]
     fn it_should_determine_if_one_range_contains_another() {
-        assert_eq!(super::is_range_in_range(2..8,3..7),true);
-        assert_eq!(super::is_range_in_range(2..3,3..7),false);
-        assert_eq!(super::is_range_in_range(3..7,2..8),false);
+        assert_eq!(super::is_range_in_range(&(2..8),&(3..7)),true);
+        assert_eq!(super::is_range_in_range(&(2..3),&(3..7)),false);
+        assert_eq!(super::is_range_in_range(&(3..7),&(2..8)),false);
+    }
+
+    #[test]
+    fn it_should_determine_if_any_range_contains_another() {
+        assert_eq!(super::is_included_in_range(&(2..8),&(3..7)),true);
+        assert_eq!(super::is_included_in_range(&(2..3),&(3..7)),false);
+        assert_eq!(super::is_included_in_range(&(3..7),&(2..8)),true);
     }
     #[test]
     fn it_should_solve_sample() {
