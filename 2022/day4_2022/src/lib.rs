@@ -6,18 +6,20 @@ pub fn solve1<P>(filename : P) -> u32
 where P: AsRef<Path>, {
     let pairs = common::split_lines(common::read_lines(filename),",");
     pairs.iter().map(to_ranges).map(score).sum()
-    0
 }
 
-pub fn to_ranges(Vec<String>) -> Vec<Range<u32> {
+pub fn to_ranges(ranges: &Vec<String>) -> Vec<Range<u32>> {
+    vec![1..1,1..1]
 }
+
 
 pub fn to_range(range: String) -> Range<u32> {
-
+   let vec: Vec<String> = range.split("-").map(|e| e.to_string()).collect();
+    return vec[0].parse().unwrap()..vec[1].parse().unwrap();
 }
 
-fn score(ranges: Vec<Range<u32>) -> u32 {
-    if is_include_in_range(&ranges[0], &ranges[1]) {
+fn score(ranges: Vec<Range<u32>>) -> u32 {
+    if is_included_in_range(&ranges[0], &ranges[1]) {
         return 1
     }
     0
@@ -55,6 +57,10 @@ mod tests {
         assert_eq!(super::solve1("./data/sample"),2)
     }
 
+    #[test]
+    fn it_should_convert_string_to_range() {
+        assert_eq!(super::to_range("2-8".to_string()),2..8)
+    }
     #[test]
     fn it_should_solve_sample_part2() {
         assert_eq!(super::solve2("./data/sample"),12)
