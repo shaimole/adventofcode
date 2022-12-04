@@ -4,54 +4,20 @@ use std::collections::HashMap;
 
 pub fn solve1<P>(filename : P) -> u32 
 where P: AsRef<Path>, {
-    return solve(get_scoring_1(),common::read_lines(filename));
+    0
 }
 
 pub fn solve2<P>(filename : P) -> u32 
 where P: AsRef<Path>, {
-    return solve(get_scoring_2(),common::read_lines(filename));
+    0
 }
-
-fn solve(scoring: HashMap<String,u32>, rounds: Vec<String>) -> u32 {
-    return rounds.iter().map(|round| scoring.get(round).unwrap()).sum();
-}
-
-fn get_scoring_1() -> HashMap<String,u32> {
-    return HashMap::from([
-        ("A X".to_string(),1 + 3),
-        ("A Y".to_string(),2 + 6),
-        ("A Z".to_string(),3 + 0),
-        ("B X".to_string(),1 + 0),
-        ("B Y".to_string(),2 + 3),
-        ("B Z".to_string(),3 + 6),
-        ("C X".to_string(),1 + 6),
-        ("C Y".to_string(),2 + 0),
-        ("C Z".to_string(),3 + 3),
-    ]);
-}
-
-fn get_scoring_2() -> HashMap<String,u32> {
-    return HashMap::from([
-        ("A X".to_string(),3 + 0),
-        ("A Y".to_string(),1 + 3),
-        ("A Z".to_string(),2 + 6),
-        ("B X".to_string(),1 + 0),
-        ("B Y".to_string(),2 + 3),
-        ("B Z".to_string(),3 + 6),
-        ("C X".to_string(),2 + 0),
-        ("C Y".to_string(),3 + 3),
-        ("C Z".to_string(),1 + 6),
-    ]);
-}
-
-
 
 #[cfg(test)]
 mod tests {
 
     #[test]
     fn it_should_solve_sample() {
-        assert_eq!(super::solve1("./data/sample"),15)
+        assert_eq!(super::solve1("./data/sample"),2)
     }
 
     #[test]
