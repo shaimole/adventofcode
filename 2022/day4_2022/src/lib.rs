@@ -1,6 +1,6 @@
 use common;
 use std::path::Path;
-use std::collections::HashMap;
+use core::ops::Range;
 
 pub fn solve1<P>(filename : P) -> u32 
 where P: AsRef<Path>, {
@@ -12,9 +12,17 @@ where P: AsRef<Path>, {
     0
 }
 
+pub fn is_range_in_range(container: Range<u32>, target: Range<u32>) -> bool {
+    container.contains(&target.start) && container.contains(&target.end)
+}
+
 #[cfg(test)]
 mod tests {
 
+    #[test]
+    fn it_should_determine_if_one_range_contains_another() {
+        assert_eq!(super::is_range_in_range((2..8),(3..7)),true);
+    }
     #[test]
     fn it_should_solve_sample() {
         assert_eq!(super::solve1("./data/sample"),2)
