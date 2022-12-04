@@ -9,11 +9,14 @@ where P: AsRef<Path>, {
 }
 
 pub fn to_ranges(ranges: &Vec<String>) -> Vec<Range<u32>> {
-    vec![1..1,1..1]
+    ranges.iter().map(to_range).collect()
 }
 
 
-pub fn to_range(range: String) -> Range<u32> {
+
+
+
+pub fn to_range(range: &String) -> Range<u32> {
    let vec: Vec<String> = range.split("-").map(|e| e.to_string()).collect();
     return vec[0].parse().unwrap()..vec[1].parse().unwrap();
 }
@@ -59,7 +62,7 @@ mod tests {
 
     #[test]
     fn it_should_convert_string_to_range() {
-        assert_eq!(super::to_range("2-8".to_string()),2..8)
+        assert_eq!(super::to_range(&"2-8".to_string()),2..8)
     }
     #[test]
     fn it_should_solve_sample_part2() {
