@@ -4,6 +4,22 @@ use core::ops::Range;
 
 pub fn solve1<P>(filename : P) -> u32 
 where P: AsRef<Path>, {
+    let pairs = common::split_lines(common::read_lines(filename),",");
+    pairs.iter().map(to_ranges).map(score).sum()
+    0
+}
+
+pub fn to_ranges(Vec<String>) -> Vec<Range<u32> {
+}
+
+pub fn to_range(range: String) -> Range<u32> {
+
+}
+
+fn score(ranges: Vec<Range<u32>) -> u32 {
+    if is_include_in_range(&ranges[0], &ranges[1]) {
+        return 1
+    }
     0
 }
 
