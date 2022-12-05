@@ -28,14 +28,25 @@ fn score(ranges: Vec<RangeInclusive<u32>>) -> u32 {
     0
 }
 
-pub fn solve2<P>(filename : P) -> u32 
-where P: AsRef<Path>, {
+fn score_2(ranges: Vec<RangeInclusive<u32>>) -> u32 {
+    if is_range_intersecting_range(&ranges[0], &ranges[1]) {
+        return 1
+    }
     0
 }
 
+pub fn solve2<P>(filename : P) -> u32 
+where P: AsRef<Path>, {
+    let pairs = common::split_lines(common::read_lines(filename),",");
+    pairs.iter().map(to_ranges).map(score_2).sum()
+}
+
 pub fn is_range_in_range(container: &RangeInclusive<u32>, target: &RangeInclusive<u32>) -> bool {
-    println!("{:?},{:?}",container.start(),container.end());
     container.contains(&target.start()) && container.contains(&target.end())
+}
+
+pub fn is_range_intersecting_range(container: &RangeInclusive<u32>, target: &RangeInclusive<u32>) -> bool {
+    container.contains(&target.start())  || container.contains(&target.end())
 }
 pub fn is_included_in_range(a: &RangeInclusive<u32>, b: &RangeInclusive<u32>) -> bool {
     is_range_in_range(a,b) || is_range_in_range(b,a)
@@ -71,16 +82,16 @@ mod tests {
     }
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(super::solve2("./data/sample"),12)
+        assert_eq!(super::solve2("./data/sample"),4)
     }
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(super::solve1("./data/input"),13484)
+        assert_eq!(super::solve1("./data/input"),456)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(super::solve2("./data/input"),13433)
+        assert_eq!(super::solve2("./data/input"),704)
     }
 
 }

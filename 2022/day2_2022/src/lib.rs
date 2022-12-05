@@ -12,6 +12,10 @@ where P: AsRef<Path>, {
     return solve(get_scoring_2(),common::read_lines(filename));
 }
 
+pub fn solve3<P>(filename : P) -> u32 
+where P: AsRef<Path>, {
+    return common::read_lines(filename).iter().map(|round| get_scoring_3(round)).sum()
+}
 fn solve(scoring: HashMap<String,u32>, rounds: Vec<String>) -> u32 {
     return rounds.iter().map(|round| scoring.get(round).unwrap()).sum();
 }
@@ -44,6 +48,20 @@ fn get_scoring_2() -> HashMap<String,u32> {
     ]);
 }
 
+fn get_scoring_3(round: &str) -> u32 {
+    match round {
+        "A X" => 3 + 0,
+        "A Y" => 1 + 3,
+        "A Z" => 2 + 6,
+        "B X" => 1 + 0,
+        "B Y" => 2 + 3,
+        "B Z" => 3 + 6,
+        "C X" => 2 + 0,
+        "C Y" => 3 + 3,
+        "C Z" => 1 + 6,
+        _ => unreachable!(),
+    }
+}
 
 
 #[cfg(test)]
