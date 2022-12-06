@@ -1,15 +1,12 @@
-
 use std::collections::HashSet;
 
-pub fn solve(datastream: Vec<char>, window_size: usize) -> usize {
-    let datastream_as_slice: &[char] = &datastream[..];
-    for (i, set) in datastream_as_slice.windows(window_size).enumerate() {
-        let as_hash: HashSet<&char> = set.iter().collect();
-        if as_hash.len() == set.len() {
-            return i + window_size;
-        }
-    }
-    unreachable!()
+pub fn solve(datastream: Vec<char>, sequence_len: usize) -> usize {  
+    &datastream[..].windows(sequence_len).position(is_all_unique).unwrap() + sequence_len
+}
+
+fn is_all_unique(set: &[char]) -> bool {
+    let as_hash: HashSet<&char> = set.iter().collect();
+    as_hash.len() == set.len()
 }
 
 #[cfg(test)]
