@@ -11,7 +11,7 @@ where P: AsRef<Path>, {
 }
 
 pub fn lines_to_int(lines: Vec<String>) -> Vec<i32> {
-    return lines.iter().map(|line| line.parse().unwrap()).collect();
+    return lines.iter().filter(|string| !string.is_empty()).map(|line| line.parse().unwrap()).collect();
 }
 
 pub fn split_lines(lines: Vec<String>, delimiter: &str) -> Vec<Vec<String>> {
