@@ -114,7 +114,7 @@ pub fn scenic_score(grid: &Vec<Vec<u32>>,i:usize, j:usize) -> u32 {
             break;
         }        
     }
-    score_down * score_up * score_left * score_right as u32
+    score_down * score_up * score_left * score_right
 }
 
 
