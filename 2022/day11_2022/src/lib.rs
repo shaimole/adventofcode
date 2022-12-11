@@ -82,7 +82,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
     let felix_ops = Box::new(
         |item: usize| {
             let modulo = 2;
-            let new_worry = item%modulo * 5%modulo; 
+            let new_worry = (item* 5) % 9699690; 
             if (new_worry%modulo == 0) {
                 return (new_worry,4)
             }
@@ -95,7 +95,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 7;
             let success = 5;
             let fail = 6;
-            let new_worry = item%modulo + 7%modulo; 
+            let new_worry = (item + 7) % 9699690;; 
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -108,7 +108,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 3;
             let success = 7;
             let fail = 0;
-            let new_worry = item%modulo +5%modulo; 
+            let new_worry = (item +5) % 9699690;; 
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -121,7 +121,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 17;
             let success = 1;
             let fail = 5;
-            let new_worry = item%modulo + 8%modulo; 
+            let new_worry = (item + 8) % 9699690;
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -158,7 +158,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 11;
             let success = 3;
             let fail = 1;
-            let new_worry = item%modulo + 4%modulo; 
+            let new_worry = (item + 4) % 9699690;
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -176,7 +176,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 19;
             let success = 6;
             let fail = 2;
-            let new_worry = item%modulo * 2%modulo; 
+            let new_worry = (item* 2) % 9699690;
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -194,7 +194,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 5;
             let success = 2;
             let fail = 7;
-            let new_worry = item%modulo * item%modulo; 
+            let new_worry = (item * item) % 9699690; 
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -212,7 +212,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 13;
             let success = 4;
             let fail = 0;
-            let new_worry = item%modulo + 6%modulo; 
+            let new_worry = (item + 6) % 9699690; 
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -256,7 +256,7 @@ pub fn solve_sample(steps: usize) -> u32  {
     return max * operations.pop().unwrap();
 }
 
-pub fn solve(steps: usize) -> u32  {
+pub fn solve(steps: usize) -> u128  {
     let mut apes = init_monkeys();
     let mut operations: Vec<u32> = vec![0;apes.len()];
     for round in 0..steps {
@@ -274,7 +274,7 @@ pub fn solve(steps: usize) -> u32  {
     }
     operations.sort();
     let max = operations.pop().unwrap();
-    return max * operations.pop().unwrap();
+    return max as u128 * operations.pop().unwrap() as u128;
 }
 
 
