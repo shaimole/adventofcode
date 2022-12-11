@@ -4,27 +4,20 @@ use std::path::Path;
 fn move_tail(mut tail_pos: (i32, i32), head_pos: (i32, i32)) -> (i32,i32) {
     let total_distance = ((tail_pos.0.abs() - head_pos.0.abs()).abs() + (tail_pos.1.abs() - head_pos.1.abs()).abs()).abs();
     let mut distance_threshhold = 1;
-    if (total_distance == 3) {
+    if total_distance == 3 {
         distance_threshhold = 0;
     }
-    println!("Tail: {:?} Head: {:?}",tail_pos, head_pos);
-        println!("distance: {:?} threshold: {:?}",total_distance, distance_threshhold);
 
     if tail_pos.0 - head_pos.0 > distance_threshhold {
-        println!("Move x right");
             tail_pos.0 = tail_pos.0 - 1;
     }
     if tail_pos.0 - head_pos.0 < -distance_threshhold {
-                println!("Move x left");
             tail_pos.0 += 1;
     }
     if tail_pos.1 - head_pos.1 > distance_threshhold {
-             println!("Move y down");
             tail_pos.1 = tail_pos.1 - 1;
     }
-
     if tail_pos.1 - head_pos.1 < -distance_threshhold{
-         println!("Move y up");
             tail_pos.1 += 1;
     }
     tail_pos
@@ -38,13 +31,11 @@ where P: AsRef<Path>, {
     let mut head_pos = (0,0);
 
     
-
+    tail_visited.insert(tail_pos);
     instructions.iter().for_each(|line| {
         let direction:&str = &line[0];
         let steps: u32 = line[1].parse().unwrap();
         for _ in 0..steps {
-            println!("Tail: {:?} Head: {:?}",tail_pos, head_pos);
-            tail_visited.insert(tail_pos);
             match direction {
                 "R" => {
                     head_pos.1 += 1;
@@ -66,11 +57,13 @@ where P: AsRef<Path>, {
                 },
                 _ => unreachable!()
             }
+            tail_visited.insert(tail_pos);
+            println!("Tail {:?}",tail_pos);
+            println!("Head {:?}",head_pos);
         }
 
     });
-    println!("{:?}",tail_visited);
-
+    // println!("Head {:?}",tail_visited);
     tail_visited.iter().len()
 }
 
@@ -90,11 +83,30 @@ mod tests {
         assert_eq!(solve("./data/sample"),13)
     }
     #[test]
+    fn it_should_solve_sample_extended() {
+        assert_eq!(solve("./data/sample2"),24)
+    }
+    #[test]
     fn it_should_move_tail_correctly() {
+        assert_eq!(move_tail((0,0),(2,2)),(1,1));
+        assert_eq!(move_tail((0,0),(-2,-2)),(-1,-1));
+        assert_eq!(move_tail((0,0),(2,-2)),(1,-1));
+        assert_eq!(move_tail((0,0),(-2,2)),(-1,1));
+
+        assert_eq!(move_tail((0,0),(2,1)),(1,1));
+        assert_eq!(move_tail((0,0),(-2,-1)),(-1,-1));
+        assert_eq!(move_tail((0,0),(2,-1)),(1,-1));
+        assert_eq!(move_tail((0,0),(-2,1)),(-1,1));
+
+        assert_eq!(move_tail((0,0),(1,2)),(1,1));
+        assert_eq!(move_tail((0,0),(-1,-2)),(-1,-1));
+        assert_eq!(move_tail((0,0),(1,-2)),(1,-1));
+        assert_eq!(move_tail((0,0),(-1,2)),(-1,1));
+
+        assert_eq!(move_tail((-1,-1),(-3,0)),(-2,0));
         assert_eq!(move_tail((0,0),(0,2)),(0,1));
         assert_eq!(move_tail((0,-1),(0,-3)),(0,-2));
         assert_eq!(move_tail((0,0),(0,-2)),(0,-1));
-        assert_eq!(move_tail((0,0),(-2,-2)),(-1,-1));
         assert_eq!(move_tail((0,0),(2,-2)),(1,-1));
         assert_eq!(move_tail((0,0),(2,0)),(1,0));
         assert_eq!(move_tail((0,0),(-2,0)),(-1,0));
