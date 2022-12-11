@@ -1,7 +1,6 @@
-use std::path::Path;
 
 struct Monkey<T: ?Sized> {
-    items: Vec<u32>,
+    items: Vec<Vec<u32>>,
     operation: Box<T>,
 }
 
@@ -9,65 +8,66 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
     let felix_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 * 19.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%23 == 0) {
-                return (calm_worry,2)
+            let new_worry = item%23 * 19%23; 
+            if (new_worry%23 == 0) {
+                return (new_worry,2)
             }
-            (calm_worry as usize, 3u32)
+            (new_worry as usize, 3u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let felix = Monkey {
-        items: vec![79,98],
+        items: vec![vec![79;4],vec![98;4]],
         operation: felix_ops
     };
 
     let lars_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 + 6.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%19 == 0) {
-                return (calm_worry,2)
+            let new_worry = item%19 + 6%19; 
+            if new_worry%19 == 0 {
+                return (new_worry,2)
             }
-            (calm_worry as usize, 0u32)
+            (new_worry as usize, 0u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
+
+    let lars = Monkey {
+        items: vec![
+            vec![54;4],vec![65;4],vec![75;4],vec![74;4]],
+        operation: lars_ops,
+    };
 
      let jens_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 * item as f32;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%13 == 0) {
-                return (calm_worry,1)
+            let new_worry = item%13 * item%13; 
+            if new_worry%13 == 0 {
+                return (new_worry,1)
             }
-            (calm_worry as usize, 3u32)
+            (new_worry as usize, 3u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
+
+    let jens = Monkey {
+        items: vec![
+             vec![79;4],vec![60;4],vec![97;4]
+             ],
+        operation: jens_ops,
+    };
 
     let raik_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 + 3.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-              println!("raik new worry {:?}, calm worry {:?}",new_worry, calm_worry);
-            if (calm_worry%17 == 0) {
-                return (calm_worry,0)
+            let new_worry = item%17 + 3%17; 
+            if new_worry%17 == 0 {
+                return (new_worry,0)
             }
-            (calm_worry as usize, 1u32)
+            (new_worry as usize, 1u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
-
-    let lars = Monkey {
-        items: vec![54,65,75,74],
-        operation: lars_ops,
-    };
-    let jens = Monkey {
-        items: vec![79,60,97],
-        operation: jens_ops,
-    };
     let raik = Monkey {
-        items: vec![74],
+        items: vec![
+            vec![74;4]
+            ],
         operation: raik_ops,
     };
     let apes =  vec![felix,lars,jens,raik];
@@ -75,143 +75,155 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
    
 }
 
+
 fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
+
 
     let felix_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 * 5.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%2 == 0) {
-                return (calm_worry,4)
+            let modulo = 2;
+            let new_worry = item%modulo * 5%modulo; 
+            if (new_worry%modulo == 0) {
+                return (new_worry,4)
             }
-            (calm_worry as usize, 3u32)
+            (new_worry as usize, 3u32)
+        }
+    ) as Box<dyn Fn(usize) -> (usize, u32)>;
+
+    let lars_ops = Box::new(
+        |item: usize| {
+            let modulo = 7;
+            let success = 5;
+            let fail = 6;
+            let new_worry = item%modulo + 7%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
+            }
+            (new_worry as usize, fail as u32)
+        }
+    ) as Box<dyn Fn(usize) -> (usize, u32)>;
+
+     let jens_ops = Box::new(
+        |item: usize| {
+            let modulo = 3;
+            let success = 7;
+            let fail = 0;
+            let new_worry = item%modulo +5%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
+            }
+            (new_worry as usize, fail as u32)
+        }
+    ) as Box<dyn Fn(usize) -> (usize, u32)>;
+
+    let raik_ops = Box::new(
+        |item: usize| {
+            let modulo = 17;
+            let success = 1;
+            let fail = 5;
+            let new_worry = item%modulo + 8%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
+            }
+            (new_worry as usize, fail as u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let felix = Monkey {
-        items: vec![80],
+        items: vec![vec![80;8]],
         operation: felix_ops
     };
 
-
-
-    let lars_ops = Box::new(
-        |item: usize| {
-            let new_worry:f32 = item as f32 + 7.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%7 == 0) {
-                return (calm_worry,5)
-            }
-            (calm_worry as usize, 6u32)
-        }
-    ) as Box<dyn Fn(usize) -> (usize, u32)>;
-
     let lars = Monkey {
-        items: vec![75,83,74],
+        items: vec![
+            vec![75;8],vec![83;8],vec![74;8]],
         operation: lars_ops,
     };
-
-
-
-    let jens_ops = Box::new(
-        |item: usize| {
-            let new_worry:f32 = item as f32 + 5.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%3 == 0) {
-                return (calm_worry,7)
-            }
-            (calm_worry as usize, 0u32)
-        }
-    ) as Box<dyn Fn(usize) -> (usize, u32)>;
-
     let jens = Monkey {
-        items: vec![86, 67, 61, 96, 52, 63, 73],
+        items: vec![
+             vec![86;8],vec![67;8],vec![61;8],vec![96;8],vec![52;8],vec![63;8], vec![73;8]
+             ],
         operation: jens_ops,
     };
-
-
-
-    let raik_ops = Box::new(
-        |item: usize| {
-            let new_worry:f32 = item as f32 + 8.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%17 == 0) {
-                return (calm_worry,1)
-            }
-            (calm_worry as usize, 5u32)
-        }
-    ) as Box<dyn Fn(usize) -> (usize, u32)>;
-
     let raik = Monkey {
-        items: vec![85, 83, 55, 85, 57, 70, 85, 52],
+        items: vec![
+            vec![85;8],vec![83;8],vec![55;8],vec![85;8],vec![57;8],vec![70;8],vec![85;8],vec![52;8]
+            ],
         operation: raik_ops,
     };
-
+   
 
     let tom_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 + 4.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%11 == 0) {
-                return (calm_worry,3)
+            let modulo = 11;
+            let success = 3;
+            let fail = 1;
+            let new_worry = item%modulo + 4%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
             }
-            (calm_worry as usize, 1u32)
+            (new_worry as usize, fail as u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let tom = Monkey {
-        items: vec![67, 75, 91, 72, 89],
+        items: vec![vec![67;8],vec![75;8],vec![91;8],vec![72;8],vec![89;8]],
         operation: tom_ops,
     };
 
     let leo_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 * 2.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%19 == 0) {
-                return (calm_worry,6)
+            let modulo = 19;
+            let success = 6;
+            let fail = 2;
+            let new_worry = item%modulo * 2%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
             }
-            (calm_worry as usize, 2u32)
+            (new_worry as usize, fail as u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let leo = Monkey {
-        items: vec![66, 64, 68, 92, 68, 77],
+        items:vec![vec![66;8],vec![64;8],vec![68;8],vec![92;8],vec![68;8],vec![77;8]],
         operation: leo_ops,
     };
 
     let alfred_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 * item as f32;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%5 == 0) {
-                return (calm_worry,2)
+            let modulo = 5;
+            let success = 2;
+            let fail = 7;
+            let new_worry = item%modulo * item%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
             }
-            (calm_worry as usize, 7u32)
+            (new_worry as usize, fail as u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let alfred = Monkey {
-        items: vec![97, 94, 79, 88],
+        items:vec![vec![97;8],vec![94;8],vec![79;8],vec![88;8]],
         operation: alfred_ops,
     };
 
     let sepp_ops = Box::new(
         |item: usize| {
-            let new_worry:f32 = item as f32 + 6.0;
-            let calm_worry = (new_worry as f32 / 3.0) as usize;
-            if (calm_worry%13== 0) {
-                return (calm_worry,4)
+            let modulo = 13;
+            let success = 4;
+            let fail = 0;
+            let new_worry = item%modulo + 6%modulo; 
+            if new_worry%modulo == 0 {
+                return (new_worry,success)
             }
-            (calm_worry as usize, 0u32)
+            (new_worry as usize, fail as u32)
         }
     ) as Box<dyn Fn(usize) -> (usize, u32)>;
 
     let sepp = Monkey {
-        items: vec![77, 85],
+        items:vec![vec![77;8],vec![85;8]],
         operation: sepp_ops,
     };
-
 
 
 
@@ -222,55 +234,47 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
 
 
-pub fn solve_sample() -> u32  {
+pub fn solve_sample(steps: usize) -> u32  {
     let mut apes = init_monkeys_sample();
     let mut operations: Vec<u32> = vec![0;apes.len()];
-    for round in 0..20 {
+    for round in 0..steps {
         for n in 0..apes.len() {
             for _ in 0..apes[n].items.len() {
                 operations[n] = operations[n] +1;
                 let operation = &apes[n].operation;
-                let ape_result: (usize,u32) = operation(apes[n].items[0] as usize);
-                println!("{:?}", ape_result);
-                apes[ape_result.1 as usize].items.push(ape_result.0 as u32);
+                let ape_result: (usize,u32) = operation(apes[n].items[0][n] as usize);
+                let mut new_items = apes[n].items[0].clone();
+                new_items[n] = ape_result.0 as u32;
+                apes[ape_result.1 as usize].items.push(new_items);
                 apes[n].items.remove(0);
             }
         }
-        for i in 0..apes.len() {
-            println!("round {:?}, {:?}",round, apes[i].items);
-        }
     }
+    println!("{:?}",operations);
     operations.sort();
     let max = operations.pop().unwrap();
     return max * operations.pop().unwrap();
 }
 
-pub fn solve() -> u32  {
+pub fn solve(steps: usize) -> u32  {
     let mut apes = init_monkeys();
     let mut operations: Vec<u32> = vec![0;apes.len()];
-    for round in 0..20 {
+    for round in 0..steps {
         for n in 0..apes.len() {
             for _ in 0..apes[n].items.len() {
                 operations[n] = operations[n] +1;
                 let operation = &apes[n].operation;
-                let ape_result: (usize,u32) = operation(apes[n].items[0] as usize);
-                println!("{:?}", ape_result);
-                apes[ape_result.1 as usize].items.push(ape_result.0 as u32);
+                let ape_result: (usize,u32) = operation(apes[n].items[0][n] as usize);
+                let mut new_items = apes[n].items[0].clone();
+                new_items[n] = ape_result.0 as u32;
+                apes[ape_result.1 as usize].items.push(new_items);
                 apes[n].items.remove(0);
             }
-        }
-        for i in 0..apes.len() {
-            println!("round {:?}, {:?}",round, apes[i].items);
         }
     }
     operations.sort();
     let max = operations.pop().unwrap();
     return max * operations.pop().unwrap();
-}
-
-pub fn solve2<P>(filename : P) -> u32 
-where P: AsRef<Path>, {
- 0
 }
 
 
@@ -282,21 +286,21 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample() {
-        assert_eq!(solve_sample(),10605)
+        assert_eq!(solve_sample(20),10605)
     }
 
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(solve2("./data/sample"),8)
+        assert_eq!(solve_sample(20),2713310158)
     }
     #[test]
     fn it_should_solve_part_1() {
-         assert_eq!(solve(),1789)
+         assert_eq!(solve(20),100345)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"),314820)
+        assert_eq!(solve(10000),314820)
     }
 
 }
