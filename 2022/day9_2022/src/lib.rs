@@ -3,6 +3,23 @@ use std::path::Path;
 
 fn move_tail(mut tail_pos: (i32, i32), head_pos: (i32, i32)) -> (i32,i32) {
     let total_distance = ((tail_pos.0.abs() - head_pos.0.abs()).abs() + (tail_pos.1.abs() - head_pos.1.abs()).abs()).abs();
+    let diff = (head_pos.0 - tail_pos.0, head_pos.1 - tail_pos.1);
+    if diff.1.abs() <=1 && diff.0.abs() <= 1 {
+        return tail_pos;
+    }
+    if diff.0 < 0 {
+        tail_pos.0 -= 1;
+    }
+    if diff.0 > 0 {
+        tail_pos.0 += 1;
+    }
+    if diff.1 < 0 {
+        tail_pos.1 -= 1;
+    }
+    if diff.1 > 0 {
+        tail_pos.1 += 1;
+    }
+    return tail_pos;
     let mut distance_threshhold = 1;
     if total_distance == 3 {
         distance_threshhold = 0;
