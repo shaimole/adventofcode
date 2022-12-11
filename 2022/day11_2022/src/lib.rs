@@ -95,7 +95,7 @@ fn init_monkeys() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
             let modulo = 7;
             let success = 5;
             let fail = 6;
-            let new_worry = (item + 7) % 9699690;; 
+            let new_worry = (item + 7) % 9699690; 
             if new_worry%modulo == 0 {
                 return (new_worry,success)
             }
@@ -267,6 +267,7 @@ pub fn solve(steps: usize) -> u128  {
                 let ape_result: (usize,u32) = operation(apes[n].items[0][n] as usize);
                 let mut new_items = apes[n].items[0].clone();
                 new_items[n] = ape_result.0 as u32;
+                new_items = vec![ape_result.0 as u32;8];
                 apes[ape_result.1 as usize].items.push(new_items);
                 apes[n].items.remove(0);
             }
