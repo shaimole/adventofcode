@@ -8,7 +8,7 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
     let felix_ops = Box::new(
         |item: usize| {
-            let new_worry = item%23 * 19%23; 
+            let new_worry = (item * 19) %(17*13*19*23); 
             if (new_worry%23 == 0) {
                 return (new_worry,2)
             }
@@ -23,7 +23,7 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
     let lars_ops = Box::new(
         |item: usize| {
-            let new_worry = item%19 + 6%19; 
+            let new_worry = (item + 6) % (17*13*19*23); 
             if new_worry%19 == 0 {
                 return (new_worry,2)
             }
@@ -39,7 +39,7 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
      let jens_ops = Box::new(
         |item: usize| {
-            let new_worry = item%13 * item%13; 
+            let new_worry = (item * item) %(17*13*19*23); 
             if new_worry%13 == 0 {
                 return (new_worry,1)
             }
@@ -56,7 +56,7 @@ fn init_monkeys_sample() -> Vec<Monkey<dyn Fn(usize) -> (usize, u32)>>{
 
     let raik_ops = Box::new(
         |item: usize| {
-            let new_worry = item%17 + 3%17; 
+            let new_worry = (item + 3 )% (17*13*19*23);
             if new_worry%17 == 0 {
                 return (new_worry,0)
             }
@@ -244,7 +244,7 @@ pub fn solve_sample(steps: usize) -> u32  {
                 let operation = &apes[n].operation;
                 let ape_result: (usize,u32) = operation(apes[n].items[0][n] as usize);
                 let mut new_items = apes[n].items[0].clone();
-                new_items[n] = ape_result.0 as u32;
+                new_items = vec![ape_result.0 as u32;4];
                 apes[ape_result.1 as usize].items.push(new_items);
                 apes[n].items.remove(0);
             }
@@ -291,7 +291,7 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(solve_sample(20),2713310158)
+        assert_eq!(solve_sample(10000),2713310158)
     }
     #[test]
     fn it_should_solve_part_1() {
