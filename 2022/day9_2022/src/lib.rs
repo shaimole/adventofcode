@@ -40,11 +40,35 @@ where
     tail_visited.iter().len()
 }
 
-pub fn solve2<P>(filename: P) -> u32
+pub fn solve2<P>(filename: P) -> usize
 where
     P: AsRef<Path>,
 {
-    0
+      let mut tail_visited: HashSet<(i32, i32)> = HashSet::new();
+    let instructions = common::split_lines(common::read_lines(filename), " ");
+    let mut tail_pos = vec![(0,0);9];
+    let mut head_pos = (0, 0);
+
+    tail_visited.insert(tail_pos[8]);
+    instructions.iter().for_each(|line| {
+        let direction: &str = &line[0];
+        let steps: u32 = line[1].parse().unwrap();
+        for _ in 0..steps {
+            match direction {
+                "R" => head_pos.1 += 1,
+                "L" => head_pos.1 -= 1,
+                "U" => head_pos.0 -= 1,
+                "D" => head_pos.0 += 1,
+                _ => unreachable!(),
+            }
+            tail_pos[0] = move_tail(tail_pos[0], head_pos);
+            for n in 1..tail_pos.len() {
+                tail_pos[n] = move_tail(tail_pos[n], tail_pos[n-1]);
+            }
+            tail_visited.insert(tail_pos[8]);
+        }
+    });
+    tail_visited.iter().len()
 }
 
 #[cfg(test)]
@@ -57,7 +81,7 @@ mod tests {
     }
     #[test]
     fn it_should_solve_sample_extended() {
-        assert_eq!(solve("./data/sample2"), 24)
+        assert_eq!(solve("./data/sample2"), 88)
     }
     #[test]
     fn it_should_move_tail_correctly() {
@@ -89,7 +113,12 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(solve2("./data/sample"), 8)
+        assert_eq!(solve2("./data/sample"), 1)
+    }
+
+        #[test]
+    fn it_should_solve_sample_extended_part2() {
+        assert_eq!(solve2("./data/sample2"), 36)
     }
     #[test]
     fn it_should_solve_part_1() {
@@ -98,6 +127,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), 314820)
+        assert_eq!(solve2("./data/input"), 2651)
     }
 }
