@@ -4,6 +4,22 @@ pub fn solve<P>(filename: P) -> i32
 where
     P: AsRef<Path>,
 {
+    // parse input as matrix/vec of vec str
+    // find starting position as in (i,j) 
+    // init steps with 0
+    // init visited as an empty vec
+
+    // start traveling pass current steps 0 , visited, and starting position as current cell
+    // if starting pos equals end return steps;
+    // look at adjecent cells
+    // for each cell determine if cell was 1. not visited before 2. is elevation of at most 1 more as current cell
+        // if true
+            //  increment steps by one
+            // clone visited and append cell
+            // start traveling pass current steps +1  , visited clone , and this cell beining looked at
+            // returning value will be 
+
+    // return steps
    0 
 }
 
