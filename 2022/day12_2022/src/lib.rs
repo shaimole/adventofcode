@@ -8,10 +8,13 @@ where
 {
     let map = get_height_map(filename);
     let start = find_start(&map);
-    travel(0, HashSet::new(), vec![start], &map)
+    travel(0, HashSet::new(), vec![start], &map, i32::MAX)
 }
 
-fn travel(steps: i32, mut visited: HashSet<(usize,usize)>, current_set: Vec<(usize,usize)>, map: &Vec<Vec<String>> ) -> i32 {
+fn travel(steps: i32, mut visited: HashSet<(usize,usize)>, current_set: Vec<(usize,usize)>, map: &Vec<Vec<String>>, max_steps: i32 ) -> i32 {
+    if steps >= max_steps {
+        return steps;
+    }
     let mut next_set = vec![];
     for current_pos in current_set {
         let adjecent = get_neighbours(current_pos, map.len() - 1, map[0].len() -1);
@@ -27,7 +30,7 @@ fn travel(steps: i32, mut visited: HashSet<(usize,usize)>, current_set: Vec<(usi
             }
         }
     }
-    travel(steps + 1,visited,next_set,map)
+    travel(steps + 1,visited,next_set,map, max_steps)
 }
 
 fn get_height_map<P>(filename: P) -> Vec<Vec<String>>
@@ -76,11 +79,22 @@ fn get_elevation(character: &String) -> i32 {
 }
 
 
-pub fn solve2<P>(filename: P) -> u32
+pub fn solve2<P>(filename: P) -> i32
 where
     P: AsRef<Path>,
 {
-    1
+    let map = get_height_map(filename);
+    let mut min_steps = i32::MAX;
+    for i in 0..map.len() {
+        for j in 0..map[0].len() {
+            if  ["S".to_string(),"a".to_string()].contains(&map[i][j]) {
+                let distance = travel(0, HashSet::new(), vec![(i,j)], &map, min_steps);
+                min_steps = std::cmp::min(distance,min_steps);
+            }
+        }
+    }
+    min_steps
+    
 }
 
 #[cfg(test)]
@@ -112,16 +126,16 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample2() {
-        // assert_eq!(solve2("./data/sample"), 1)
+        assert_eq!(solve2("./data/sample"), 29)
     }
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 15020)
+        assert_eq!(solve("./data/input"), 504)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        // assert_eq!(solve2("./data/input"), 1)
+        assert_eq!(solve2("./data/input"), -1000)
     }
 }
