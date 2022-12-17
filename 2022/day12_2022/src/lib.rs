@@ -8,31 +8,26 @@ where
 {
     let map = get_height_map(filename);
     let start = find_start(&map);
-    let mut visited = HashSet::new();
-    visited.insert(start);
-    travel(0, visited, start, map)
+    travel(0, HashSet::new(), vec![start], &map)
 }
 
-fn travel(steps: i32, visited: HashSet<(usize,usize)>,current_pos: (usize,usize), map: Vec<Vec<String>> ) -> i32 {
-    if map[current_pos.0][current_pos.1] == "E" {
-            return steps;
-    }
-    let mut steps_to_goal = i32::MAX;
-    let adjecent = get_neighbours(current_pos, map.len() - 1, map[0].len() -1);
-    let current_elevation = get_elevation(&map[current_pos.0][current_pos.1]);
-    for cell in adjecent {
-        if !visited.contains(&cell) && current_elevation - get_elevation(&map[cell.0][cell.1]) >= -1 {
-            let mut child_visit = visited.clone();
-            child_visit.insert(cell);
-            let child_map =  map.clone();
-            let steps_to_goal_for_path = travel(steps + 1, child_visit, cell, child_map);
-            if steps_to_goal_for_path < steps_to_goal {
-                steps_to_goal = steps_to_goal_for_path
+fn travel(steps: i32, mut visited: HashSet<(usize,usize)>, current_set: Vec<(usize,usize)>, map: &Vec<Vec<String>> ) -> i32 {
+    let mut next_set = vec![];
+    for current_pos in current_set {
+        let adjecent = get_neighbours(current_pos, map.len() - 1, map[0].len() -1);
+        let current_elevation = get_elevation(&map[current_pos.0][current_pos.1]);
+        for cell in adjecent {
+            let point = &map[cell.0][cell.1];
+            if !visited.contains(&cell) &&  get_elevation(&point) - current_elevation <= 1 {
+                visited.insert(cell);
+                if point == "E" {
+                    return steps + 1;
+                }
+                next_set.push(cell);
             }
-            
         }
     }
-    steps_to_goal
+    travel(steps + 1,visited,next_set,map)
 }
 
 fn get_height_map<P>(filename: P) -> Vec<Vec<String>>
