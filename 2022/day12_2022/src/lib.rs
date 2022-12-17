@@ -136,6 +136,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), -1000)
+        assert_eq!(solve2("./data/input"), 500)
     }
 }
