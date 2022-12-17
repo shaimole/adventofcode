@@ -19,6 +19,11 @@ pub fn split_lines(lines: Vec<String>, delimiter: &str) -> Vec<Vec<String>> {
         .map(|part| part.to_string()).collect())
     .collect();
 }
+pub fn split_lines_no_empty_strings(lines: Vec<String>, delimiter: &str) -> Vec<Vec<String>> {
+    return lines.iter().map(|line| line.split(delimiter)
+        .map(|part| part.to_string()).filter(|part| part != "").collect())
+    .collect();
+}
 
 pub fn get_bit(number: &u32, position: usize) -> bool{
     return number & (1 << position) != 0
