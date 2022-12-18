@@ -71,6 +71,9 @@ fn compare(a: &String, b: &String) -> bool {
                 return false;
             }
         }
+        if sets_parsed_b[i].len() > sets_parsed_a[i].len() {
+            return true;
+        }
     }
 
     
