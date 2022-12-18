@@ -60,6 +60,7 @@ fn compare(a: &String, b: &String) -> bool {
                         j += 1;
                     }
                     set.push(number);
+                    i += j - 1;
                 }
             }
             i += 1;
