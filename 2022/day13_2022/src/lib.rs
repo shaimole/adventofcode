@@ -7,12 +7,13 @@ where
     let input = common::read_lines(filename);
     let no_blanks: Vec<&String> = input.iter().filter(|line| line != &&"".to_string()).collect();
 let mut score = 0;
-    println!("{:?}", no_blanks);
     let mut i =0;
     let mut index = 1;
     while i < no_blanks.len() -1 {
         if compare(no_blanks[i], no_blanks[i+1]) {
             score += index;
+        }else {
+    println!("{:?}", index);
         }
         index += 1;
         i +=2;
@@ -33,7 +34,6 @@ fn compare(a: &String, b: &String) -> bool {
         while i < a.len() {
             let c = a[i];
             if c == '[' {
-                println!("");
                 let (increment, sets_1) = print_parts(&a[0..a.len()], i.clone(), sets);
                 sets = sets_1;
                 i = increment;
@@ -53,8 +53,6 @@ fn compare(a: &String, b: &String) -> bool {
     let mut sets_parsed_a = print_parts(a_chars.as_slice(), 0, sets).1;
     let sets_b: Vec<Vec<char>> = vec![];
     let mut sets_parsed_b = print_parts(b_chars.as_slice(), 0, sets_b).1;
-    println!("{:?}", sets_parsed_a);
-    println!("{:?}", sets_parsed_b);
     for i in 0..sets_parsed_a.len() {
         if i > sets_parsed_b.len() - 1 {
             return false;
@@ -65,16 +63,17 @@ fn compare(a: &String, b: &String) -> bool {
         if sets_parsed_b[i].len() == 1 && sets_parsed_a[i].len() > 1 {
             sets_parsed_b[i] = vec![sets_parsed_b[i][0];sets_parsed_a[i].len()];
         }
-    println!("{:?}", sets_parsed_a[i]);
-    println!("{:?}", sets_parsed_b[i]);
         for j in 0..sets_parsed_a[i].len() {
             if sets_parsed_b[i].len() < sets_parsed_a[i].len() {
                 return false;
             }
             let mut to_compare_a = sets_parsed_a[i][j];
             let mut to_compare_b = sets_parsed_b[i][j];
-            let success = is_right_order(to_compare_a,to_compare_b);
-            if !success {
+            let diff: i32 = to_compare_b as i32 - to_compare_a as i32;
+            if diff > 0 {
+                return true;
+            }
+            if diff < 0 {
                 return false;
             }
         }
