@@ -53,13 +53,19 @@ fn compare(a: &String, b: &String) -> bool {
     let mut sets_parsed_a = print_parts(a_chars.as_slice(), 0, sets).1;
     let sets_b: Vec<Vec<char>> = vec![];
     let mut sets_parsed_b = print_parts(b_chars.as_slice(), 0, sets_b).1;
-    for i in 0..sets_parsed_a.len() {
-        if i > sets_parsed_b.len() - 1 {
-            return false;
-        }
-        for j in 0..sets_parsed_a[i].len() {
+    for i in 0..std::cmp::max(sets_parsed_a.len(),sets_parsed_b.len()){
+            if i >= sets_parsed_b.len() {
+                return false;
+            }
+            if i >= sets_parsed_a.len() {
+                return true;
+            }
+        for j in 0..std::cmp::max(sets_parsed_a[i].len(),sets_parsed_b[i].len()) {
             if j >= sets_parsed_b[i].len() {
                 return false;
+            }
+            if j >= sets_parsed_a[i].len() {
+                return true;
             }
             let mut to_compare_a = sets_parsed_a[i][j];
             let mut to_compare_b = sets_parsed_b[i][j];
@@ -70,9 +76,6 @@ fn compare(a: &String, b: &String) -> bool {
             if diff < 0 {
                 return false;
             }
-        }
-        if sets_parsed_b[i].len() > sets_parsed_a[i].len() {
-            return true;
         }
     }
 
