@@ -5,45 +5,61 @@ where
     P: AsRef<Path>,
 {
     let input = common::read_lines(filename);
-    let no_blanks: Vec<&String> = input.iter().filter(|line| line != &&"".to_string()).collect();
-let mut score = 0;
-    let mut i =0;
+    let no_blanks: Vec<&String> = input
+        .iter()
+        .filter(|line| line != &&"".to_string())
+        .collect();
+    let mut score = 0;
+    let mut i = 0;
     let mut index = 1;
-    while i < no_blanks.len() -1 {
-        if compare(no_blanks[i], no_blanks[i+1]) {
+    while i < no_blanks.len() - 1 {
+        if compare(no_blanks[i], no_blanks[i + 1]) {
             score += index;
-        }else {
-    println!("{:?}", index);
+        } else {
         }
         index += 1;
-        i +=2;
+        i += 2;
     }
     score
 }
 
 fn compare(a: &String, b: &String) -> bool {
-    let a_chars: Vec<char> = a.chars().collect();
-    let b_chars: Vec<char> = b.chars().collect();
+    let a_chars: Vec<String> =
+        common::split_lines_no_empty_strings(vec![a.to_string()], "")[0].clone();
+    let b_chars: Vec<String> =
+        common::split_lines_no_empty_strings(vec![b.to_string()], "")[0].clone();
 
-    // println!("{:?}", create_set(a_chars));
-    // println!("{:?}", create_set(b_chars));
-    let sets: Vec<Vec<char>> = vec![];
-    fn print_parts(a: &[char], mut i: usize, mut sets: Vec<Vec<char>>) -> (usize, Vec<Vec<char>>) {
+    let sets: Vec<Vec<String>> = vec![];
+    fn print_parts(
+        a: &[String],
+        mut i: usize,
+        mut sets: Vec<Vec<String>>,
+    ) -> (usize, Vec<Vec<String>>) {
         let mut set = vec![];
         i += 1;
         while i < a.len() {
-            let c = a[i];
-            if c == '[' {
+            let c = &a[i];
+            if c == &'['.to_string() {
                 let (increment, sets_1) = print_parts(&a[0..a.len()], i.clone(), sets);
                 sets = sets_1;
                 i = increment;
             } else {
-                if c == ']' {
+                if c == &']'.to_string() {
                     sets.push(set.clone());
                     return (i + 1, sets);
                 }
-                if c != ',' {
-                    set.push(c);
+                if c != &','.to_string() {
+                    let mut number = c.clone();
+                    let mut j = 1;
+                    while i + j < a.len()
+                        && &a[i + j] != &','.to_string()
+                        && &a[i + j] != &'['.to_string()
+                        && &a[i + j] != &']'.to_string()
+                    {
+                        number.push_str(&a[i + j]);
+                        j += 1;
+                    }
+                    set.push(number);
                 }
             }
             i += 1;
@@ -51,62 +67,47 @@ fn compare(a: &String, b: &String) -> bool {
         (a.len(), sets)
     }
     let mut sets_parsed_a = print_parts(a_chars.as_slice(), 0, sets).1;
-    let sets_b: Vec<Vec<char>> = vec![];
+    let sets_b: Vec<Vec<String>> = vec![];
     let mut sets_parsed_b = print_parts(b_chars.as_slice(), 0, sets_b).1;
-    for i in 0..std::cmp::max(sets_parsed_a.len(),sets_parsed_b.len()){
-            if i >= sets_parsed_b.len() {
-                return false;
-            }
-            if i >= sets_parsed_a.len() {
-                return true;
-            }
-        for j in 0..std::cmp::max(sets_parsed_a[i].len(),sets_parsed_b[i].len()) {
+    for i in 0..std::cmp::max(sets_parsed_a.len(), sets_parsed_b.len()) {
+        if i >= sets_parsed_b.len() {
+            println!("invalid, because right ran out");
+            return false;
+        }
+        if i >= sets_parsed_a.len() {
+            println!("valid, because left ran out");
+
+            return true;
+        }
+        for j in 0..std::cmp::max(sets_parsed_a[i].len(), sets_parsed_b[i].len()) {
             if j >= sets_parsed_b[i].len() {
+                println!("invalid, because right ran out");
+
                 return false;
             }
             if j >= sets_parsed_a[i].len() {
+                println!("valid, because left ran out");
+
                 return true;
             }
-            let mut to_compare_a = sets_parsed_a[i][j];
-            let mut to_compare_b = sets_parsed_b[i][j];
-            let diff: i32 = to_compare_b as i32 - to_compare_a as i32;
+            println!("{:?},{:?}", sets_parsed_a[i][j], sets_parsed_b[i][j]);
+
+            let diff: i32 = sets_parsed_b[i][j].parse::<i32>().unwrap()
+                - sets_parsed_a[i][j].parse::<i32>().unwrap();
             if diff > 0 {
+                println!("valid, left is smaller");
+
                 return true;
             }
             if diff < 0 {
+                println!("invalid, right is smaller");
                 return false;
             }
         }
     }
-
-    
+    println!("reach end");
     true
     // is_right_order(a_chars[1], b_chars[1])
-}
-
-fn create_set(chars: Vec<char>) -> Vec<Vec<char>> {
-    let mut sets: Vec<Vec<char>> = vec![vec![]];
-    let mut depth = 0;
-    for i in 1..chars.len() - 1 {
-        let c = chars[i];
-        if c == '[' {
-            sets.push(vec![]);
-            depth += 1;
-            continue;
-        }
-        if c == ']' {
-            depth -= 1;
-            continue;
-        }
-        if c != ',' {
-            sets[depth].push(c);
-        }
-    }
-    sets
-}
-
-fn is_right_order(a: char, b: char) -> bool {
-    a as u32 <= b as u32
 }
 
 pub fn solve2<P>(filename: P) -> u32
@@ -166,6 +167,12 @@ mod tests {
     fn it_should_compare_correctly_part_8() {
         let lines = common::read_lines("./data/sample");
         assert_eq!(compare(&lines[21], &lines[22]), false);
+    }
+
+    #[test]
+    fn it_should_compare_correctly_part_9() {
+        let lines = common::read_lines("./data/sample2");
+        assert_eq!(compare(&lines[0], &lines[1]), true);
     }
 
     #[test]
