@@ -57,14 +57,8 @@ fn compare(a: &String, b: &String) -> bool {
         if i > sets_parsed_b.len() - 1 {
             return false;
         }
-        if sets_parsed_a[i].len() == 1 && sets_parsed_b[i].len() > 1 {
-            sets_parsed_a[i] = vec![sets_parsed_a[i][0];sets_parsed_b[i].len()];
-        }
-        if sets_parsed_b[i].len() == 1 && sets_parsed_a[i].len() > 1 {
-            sets_parsed_b[i] = vec![sets_parsed_b[i][0];sets_parsed_a[i].len()];
-        }
         for j in 0..sets_parsed_a[i].len() {
-            if sets_parsed_b[i].len() < sets_parsed_a[i].len() {
+            if j >= sets_parsed_b[i].len() {
                 return false;
             }
             let mut to_compare_a = sets_parsed_a[i][j];
