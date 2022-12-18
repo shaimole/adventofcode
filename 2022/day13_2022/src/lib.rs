@@ -67,7 +67,7 @@ fn compare(a: &String, b: &String) -> bool {
         }
     println!("{:?}", sets_parsed_a[i]);
     println!("{:?}", sets_parsed_b[i]);
-        for j in 0..sets_parsed_a[0].len() {
+        for j in 0..sets_parsed_a[i].len() {
             if sets_parsed_b[i].len() < sets_parsed_a[i].len() {
                 return false;
             }
