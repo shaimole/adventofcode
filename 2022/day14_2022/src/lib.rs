@@ -12,8 +12,27 @@ fn solve<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
-    let map = as_map(filename);
-    println!("{:?}", map);
+    let mut map = as_map(filename);
+    let mut score = 0;
+    let mut sand_pos = (500,0);
+    for step in 1..1000000 {
+        if !map.contains(&(sand_pos.0,sand_pos.1+1)){
+            sand_pos.1 +=1;
+
+        }else if !map.contains(&(sand_pos.0-1,sand_pos.1+1)){
+            
+            sand_pos.0 -=1;
+            sand_pos.1 +=1;
+        }else if !map.contains(&(sand_pos.0+1,sand_pos.1+1)){
+
+            sand_pos.0 +=1;
+            sand_pos.1 +=1;
+        }else{
+            map.insert(sand_pos);
+            score += 1;
+            sand_pos = (500,0);
+        }
+        println!("{:?}",sand_pos);
     for i in 0..=9 {
         for j in 494..=503 {
             if map.contains(&(j, i)) {
@@ -23,6 +42,10 @@ where
             }
         }
         println!("");
+    }
+    if sand_pos.1 > 800 {
+        return score;
+    }
     }
     0
 }
@@ -64,7 +87,7 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample() {
-        assert_eq!(solve("./data/sample"), 13)
+        assert_eq!(solve("./data/sample"), 24)
     }
 
     #[test]
