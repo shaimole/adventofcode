@@ -196,11 +196,11 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 1)
+        assert_eq!(solve("./data/input"), 5675)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), 1)
+        assert_eq!(solve2("./data/input"), 20383)
     }
 }
