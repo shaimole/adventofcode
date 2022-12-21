@@ -1,120 +1,87 @@
 use std::path::Path;
 
-pub fn solve<P>(filename: P) -> u32
-where
-    P: AsRef<Path>,
-{
-    let input = common::read_lines(filename);
-    let no_blanks: Vec<&String> = input
-        .iter()
-        .filter(|line| line != &&"".to_string())
-        .collect();
-    let mut score = 0;
-    let mut i = 0;
-    let mut index = 1;
-    while i < no_blanks.len() - 1 {
-        if compare(no_blanks[i], no_blanks[i + 1]) {
-            score += index;
-        } else {
-        }
-        index += 1;
-        i += 2;
-    }
-    score
-}
-
-fn compare(a: &String, b: &String) -> bool {
-    let a_chars: Vec<String> =
-        common::split_lines_no_empty_strings(vec![a.to_string()], "")[0].clone();
-    let b_chars: Vec<String> =
-        common::split_lines_no_empty_strings(vec![b.to_string()], "")[0].clone();
-
-    let sets: Vec<Vec<String>> = vec![];
-    fn print_parts(
-        a: &[String],
-        mut i: usize,
-        mut sets: Vec<Vec<String>>,
-    ) -> (usize, Vec<Vec<String>>) {
-        let mut set = vec![];
-        i += 1;
-        while i < a.len() {
-            let c = &a[i];
-            if c == &'['.to_string() {
-                let (increment, sets_1) = print_parts(&a[0..a.len()], i.clone(), sets);
-                sets = sets_1;
-                i = increment;
-            } else {
-                if c == &']'.to_string() {
-                    sets.push(set.clone());
-                    return (i + 1, sets);
-                }
-                if c != &','.to_string() {
-                    let mut number = c.clone();
-                    let mut j = 1;
-                    while i + j < a.len()
-                        && &a[i + j] != &','.to_string()
-                        && &a[i + j] != &'['.to_string()
-                        && &a[i + j] != &']'.to_string()
-                    {
-                        number.push_str(&a[i + j]);
-                        j += 1;
-                    }
-                    set.push(number);
-                    i += j - 1;
-                }
-            }
-            i += 1;
-        }
-        (a.len(), sets)
-    }
-    let mut sets_parsed_a = print_parts(a_chars.as_slice(), 0, sets).1;
-    let sets_b: Vec<Vec<String>> = vec![];
-    let mut sets_parsed_b = print_parts(b_chars.as_slice(), 0, sets_b).1;
-    for i in 0..std::cmp::max(sets_parsed_a.len(), sets_parsed_b.len()) {
-        if i >= sets_parsed_b.len() {
-            println!("invalid, because right ran out");
-            return false;
-        }
-        if i >= sets_parsed_a.len() {
-            println!("valid, because left ran out");
-
-            return true;
-        }
-        for j in 0..std::cmp::max(sets_parsed_a[i].len(), sets_parsed_b[i].len()) {
-            if j >= sets_parsed_b[i].len() {
-                println!("invalid, because right ran out");
-
-                return false;
-            }
-            if j >= sets_parsed_a[i].len() {
-                println!("valid, because left ran out");
-
-                return true;
-            }
-            println!("{:?},{:?}", sets_parsed_a[i][j], sets_parsed_b[i][j]);
-
-            let diff: i32 = sets_parsed_b[i][j].parse::<i32>().unwrap()
-                - sets_parsed_a[i][j].parse::<i32>().unwrap();
-            if diff > 0 {
-                println!("valid, left is smaller");
-
-                return true;
-            }
-            if diff < 0 {
-                println!("invalid, right is smaller");
-                return false;
-            }
-        }
-    }
-    println!("reach end");
-    true
-    // is_right_order(a_chars[1], b_chars[1])
-}
-
 pub fn solve2<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
+    let lines = common::read_lines(filename);
+    let mut no_blanks: Vec<String> = lines
+        .iter()
+        .filter(|line| !line.is_empty())
+        .cloned()
+        .collect();
+    no_blanks.extend(vec!["[[2]]".to_string(), "[[6]]".to_string()]);
+    no_blanks.sort_by(|a, b| {
+        if compare(
+            &serde_json::from_str(a).unwrap(),
+            &serde_json::from_str(b).unwrap(),
+        ) > 0
+        {
+            return std::cmp::Ordering::Less;
+        }
+        return std::cmp::Ordering::Greater;
+    });
+    let mut product = 1;
+    for i in 0..no_blanks.len() {
+        if no_blanks[i] == "[[2]]".to_string() || no_blanks[i] == "[[6]]".to_string() {
+            product *= i + 1;
+        }
+    }
+    product as u32
+}
+
+fn solve<P>(filename: P) -> u64
+where
+    P: AsRef<Path>,
+{
+    let lines = common::read_lines(filename);
+    let mut sum = 0;
+    let mut touple_index = 1;
+    let mut i = 1;
+    while i < lines.len() - 1 {
+        if compare(
+            &serde_json::from_str(&lines[i - 1]).unwrap(),
+            &serde_json::from_str(&lines[i]).unwrap(),
+        ) > 0
+        {
+            sum += touple_index;
+        }
+        i += 3;
+        touple_index += 1;
+    }
+    sum as u64
+}
+
+fn compare(a: &serde_json::Value, b: &serde_json::Value) -> i8 {
+    if !a.is_array() && !b.is_array() {
+        let diff: i64 = b.as_i64().unwrap() - a.as_i64().unwrap();
+        if diff > 0 {
+            return 1;
+        }
+        if diff < 0 {
+            return -1;
+        }
+        return 0;
+    }
+
+    let (list_a, list_b) = match (a.is_array(), b.is_array()) {
+        (true, false) => (a.as_array().unwrap().clone(), vec![b.clone()]),
+        (false, true) => (vec![a.clone()], b.as_array().unwrap().clone()),
+        (true, true) => (a.as_array().unwrap().clone(), b.as_array().unwrap().clone()),
+        _ => unreachable!(),
+    };
+    for i in 0..std::cmp::max(list_a.len(), list_b.len()) {
+        if i >= list_b.len() {
+            return -1;
+        }
+        if i >= list_a.len() {
+            return 1;
+        }
+        let res = compare(&list_a[i], &list_b[i]);
+        if res != 0 {
+            return res;
+        }
+    }
     0
 }
 
@@ -125,57 +92,98 @@ mod tests {
     #[test]
     fn it_should_compare_correctly_part_1() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[0], &lines[1]), true);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[0]).unwrap(),
+                &serde_json::from_str(&lines[1]).unwrap()
+            ) > 0,
+            true
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_2() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[3], &lines[4]), true);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[3]).unwrap(),
+                &serde_json::from_str(&lines[4]).unwrap()
+            ) > 0,
+            true
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_3() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[6], &lines[7]), false);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[6]).unwrap(),
+                &serde_json::from_str(&lines[7]).unwrap()
+            ) > 0,
+            false
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_4() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[9], &lines[10]), true);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[9]).unwrap(),
+                &serde_json::from_str(&lines[10]).unwrap()
+            ) > 0,
+            true
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_5() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[12], &lines[13]), false);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[12]).unwrap(),
+                &serde_json::from_str(&lines[13]).unwrap()
+            ) > 0,
+            false
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_6() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[15], &lines[16]), true);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[15]).unwrap(),
+                &serde_json::from_str(&lines[16]).unwrap()
+            ) > 0,
+            true
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_7() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[18], &lines[19]), false);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[18]).unwrap(),
+                &serde_json::from_str(&lines[19]).unwrap()
+            ) > 0,
+            false
+        );
     }
 
     #[test]
     fn it_should_compare_correctly_part_8() {
         let lines = common::read_lines("./data/sample");
-        assert_eq!(compare(&lines[21], &lines[22]), false);
+        assert_eq!(
+            compare(
+                &serde_json::from_str(&lines[21]).unwrap(),
+                &serde_json::from_str(&lines[22]).unwrap()
+            ) > 0,
+            false
+        );
     }
-
-    #[test]
-    fn it_should_compare_correctly_part_9() {
-        let lines = common::read_lines("./data/sample2");
-        assert_eq!(compare(&lines[0], &lines[1]), true);
-    }
-
     #[test]
     fn it_should_solve_sample() {
         assert_eq!(solve("./data/sample"), 13)
@@ -183,7 +191,7 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample2() {
-        assert_eq!(solve2("./data/sample"), 1)
+        assert_eq!(solve2("./data/sample"), 140)
     }
 
     #[test]
