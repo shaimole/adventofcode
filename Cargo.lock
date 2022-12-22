@@ -88,6 +88,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "day16_2022"
+version = "0.1.0"
+dependencies = [
+ "common",
+ "regex",
+]
+
+[[package]]
 name = "day1_2022"
 version = "0.1.0"
 dependencies = [
