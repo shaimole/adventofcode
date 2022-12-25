@@ -16,7 +16,7 @@ where
         .map(|line| parse_cave(line))
         .collect();
     let (distances, flow_rates) = create_distance_map(caves);
-    println!("{:?}", distances);
+    println!("{:?}",  distances);
     // let relevant: Vec<&Cave> = caves.iter().filter(|cave| cave.flow != 0).collect();
     // create a hashmap where key = cave key and value = hashmap of distances to all other caves
     // create a hashmap where key = cave flow rate
@@ -56,6 +56,20 @@ fn create_distance_map(
             let cave_distances = distances.get_mut(&cave.key).unwrap();
             cave_distances.insert(other.key.clone(), distance);
         })
+    });
+    caves.iter().for_each(|cave| {
+        let flow_rate = flow_rates.get(&cave.key).unwrap();
+        if flow_rate == &0 {
+            distances.remove(&cave.key);
+        } else {
+            caves.iter().for_each(|other| {
+                let flow_rate = flow_rates.get(&other.key).unwrap();
+                if flow_rate == &0 {
+                    let cave_distances = distances.get_mut(&cave.key).unwrap();
+                cave_distances.remove(&other.key);
+                }
+            })
+        }
     });
     (distances, flow_rates)
 }
