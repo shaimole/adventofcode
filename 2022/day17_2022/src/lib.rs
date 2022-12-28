@@ -14,17 +14,29 @@ where
         vec![(0,0),(0,1),(0,2),(0,3)],
         vec![(0,0),(0,1),(1,0),(1,1)]
     ];
+    let mut current_peak=  0;
         let offset_x = 3;
-        let current_peak= find_peak(&the_pit,0);
-        let offset_y = current_peak  + 4;
-        let offset: (u32,u32) =(offset_x,offset_y);
-        the_pit.extend(pieces[4].iter().map( |(x,y)| (x + offset.0, y + offset.1)));
-    print(&the_pit,0);
-    0
+        for i in 0..5 {
+            let piece = &pieces[i%5];
+            println!("{:?}",piece);
+            current_peak= find_peak(&the_pit,current_peak);
+            println!("{:?}",current_peak);
+            let offset_y = current_peak  + 4;
+            let mut offset: ( u32,u32) =(offset_x,offset_y);
+            loop{
+                if piece.iter().map( |(x,y)| (x + offset.0, y + offset.1 - 1)).filter(|p| the_pit.contains(p)).count() > 0 {
+                    the_pit.extend(piece.iter().map( |(x,y)| (x + offset.0, y + offset.1)));
+                    break;
+            }
+             offset.1 -=1;
+            }
+        print(&the_pit,0);
+        }
+    current_peak
 }
 
 fn find_peak(current: &HashSet<(u32,u32)>, last_peak: u32) -> u32 {
-    for y in last_peak..=last_peak+3 {
+    for y in (last_peak..=last_peak+3).rev() {
         for x in 1..8{
             if current.contains(&(x,y)) {
               return y; 
