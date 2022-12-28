@@ -7,6 +7,15 @@ where
     P: AsRef<Path>
 {
     let mut the_pit = create_tetris_walls();
+    let pieces: Vec<Vec<(u32,u32)>> = vec![
+        vec![(0,0),(1,0),(2,0),(3,0)],
+        vec![(0,1),(1,0),(1,1),(1,2),(2,1)],
+        vec![(0,0),(1,0),(2,0),(2,1),(2,2)],
+        vec![(0,0),(0,1),(0,2),(0,3)],
+        vec![(0,0),(0,1),(1,0),(1,1)]
+    ];
+        let offset: (u32,u32) =(3,4);
+        the_pit.extend(pieces[4].iter().map( |(x,y)| (x + offset.0, y + offset.1)));
     print(&the_pit,0);
     0
 }
