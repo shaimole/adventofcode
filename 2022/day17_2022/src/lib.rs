@@ -14,12 +14,25 @@ where
         vec![(0,0),(0,1),(0,2),(0,3)],
         vec![(0,0),(0,1),(1,0),(1,1)]
     ];
-        let offset: (u32,u32) =(3,4);
+        let offset_x = 3;
+        let current_peak= find_peak(&the_pit,0);
+        let offset_y = current_peak  + 4;
+        let offset: (u32,u32) =(offset_x,offset_y);
         the_pit.extend(pieces[4].iter().map( |(x,y)| (x + offset.0, y + offset.1)));
     print(&the_pit,0);
     0
 }
 
+fn find_peak(current: &HashSet<(u32,u32)>, last_peak: u32) -> u32 {
+    for y in last_peak..=last_peak+3 {
+        for x in 1..8{
+            if current.contains(&(x,y)) {
+              return y; 
+            }
+        }
+    }
+    unreachable!();
+}
 fn print(current: &HashSet<(u32,u32)>, offset: u32) {
     for y in (offset..offset+10).rev() {
         for x in 0..9{
