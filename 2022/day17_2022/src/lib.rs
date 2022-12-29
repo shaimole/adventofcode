@@ -21,7 +21,7 @@ where
     let total_moves = x_moves.len();
     let mut current_move = 0;
     let mut loops = HashMap::new();
-    let mut skip_done = false;
+    let mut skip_done = true;
     let mut i = 0;
     while i <=piece_count {
         let pi = i as usize % 5;
@@ -45,20 +45,25 @@ where
                     let pieces_remaining = piece_count -i;
                     let loops_fitting_in_remaining = pieces_remaining/ (i -prev.0 as u64);
                     i += loops_fitting_in_remaining *(i -prev.0 as u64);
-                    current_peak += loops_fitting_in_remaining * (current_peak - prev.1);
-                    for fi in 0..7{
-                        the_pit.insert((fi as u64+1,current_peak - floor[fi] as u64));
+                    let space_diff = loops_fitting_in_remaining * (current_peak - prev.1);
+                    current_peak += space_diff;
+                    for x in 1..8 {
+                        for y in 0..100 {
+                            if the_pit.contains(&(x, current_peak -space_diff - y)) {
+                                the_pit.insert((x,current_peak - y));
+                            }
+                        }
                     }
                     skip_done = true;
                         println!("{:?}",i);
                         println!("{:?}",current_peak);
                         println!("{:?}",piece_count);
-                    print(&the_pit,current_peak-5);
     for wi in 0..1000000 {
         the_pit.insert((0, wi+current_peak -100));
         the_pit.insert((8, wi+current_peak -100));
     }
-                } else {
+                    print(&the_pit,current_peak-30);
+                } else if(!skip_done) {
                     loops.insert(
                         ((pi, map_floor(&the_pit, current_peak))),
                         (i as usize, current_peak),
@@ -118,20 +123,21 @@ fn find_peak(current: &HashSet<(u64, u64)>, last_peak: u64) -> u64 {
     }
     unreachable!();
 }
-fn map_floor(current: &HashSet<(u64, u64)>, offset: u64) -> Vec<i32> {
+fn map_floor(current: &HashSet<(u64, u64)>, offset: u64) -> Vec<Vec<i32>> {
     let mut floor = vec![];
     for x in 1..8 {
-        for y in 0..100 {
+        let mut line = vec![];
+        for y in 0..10 {
             if current.contains(&(x, offset - y)) {
-                floor.push(y as i32);
-                break;
+                line.push(y as i32);
             }
         }
+        floor.push(line);
     }
     floor
 }
 fn print(current: &HashSet<(u64, u64)>, offset: u64) {
-    for y in (offset..offset + 10).rev() {
+    for y in (offset..offset + 100).rev() {
         for x in 0..9 {
             if current.contains(&(x, y)) {
                 print!("#");
