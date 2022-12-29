@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
 
-pub fn solve<P>(filename: P,piece_count: u64) -> u64
+pub fn solve<P>(filename: P, piece_count: u64) -> u64
 where
     P: AsRef<Path>,
 {
@@ -21,30 +21,47 @@ where
     let total_moves = x_moves.len();
     let mut current_move = 0;
     let mut loops = HashMap::new();
-    for i in 0..=piece_count {
-        let piece = &pieces[i % 5];
+    let mut skip_done = false;
+    let mut i = 0;
+    while i <=piece_count {
+        let pi = i as usize % 5;
+        let piece = &pieces[pi];
         current_peak = find_peak(&the_pit, current_peak);
         let offset_y = current_peak + 4;
         let mut offset: (u64, u64) = (offset_x, offset_y);
         loop {
             let x_move = x_moves[current_move % total_moves];
-            if (current_move % total_moves == 0 && current_move != 0) {
+            if (current_move % total_moves == 0 && current_move != 0 && !skip_done) {
                 let floor = map_floor(&the_pit, current_peak);
-                if loops.contains_key(&(i % 5, floor.clone())) {
-                    let prev: &(usize,u64) =
-                        loops.get(&(i%5,floor.clone())).unwrap();
+                if loops.contains_key(&(pi, floor.clone())) {
+                    let prev: &(usize, u64) = loops.get(&(pi, floor.clone())).unwrap();
 
                     println!(
                         " loop deteced beginning at{:?} height  {:?},blocks {:?}",
-                        
                         prev.0,
-                        current_peak-prev.1,
-                        i -prev.0
+                        current_peak - prev.1,
+                        i - prev.0 as u64
                     );
+                    let pieces_remaining = piece_count -i;
+                    let loops_fitting_in_remaining = pieces_remaining/ (i -prev.0 as u64);
+                    i += loops_fitting_in_remaining *(i -prev.0 as u64);
+                    current_peak += loops_fitting_in_remaining * (current_peak - prev.1);
+                    for fi in 0..7{
+                        the_pit.insert((fi as u64+1,current_peak - floor[fi] as u64));
+                    }
+                    skip_done = true;
+                        println!("{:?}",i);
+                        println!("{:?}",current_peak);
+                        println!("{:?}",piece_count);
+                    print(&the_pit,current_peak-5);
+    for wi in 0..1000000 {
+        the_pit.insert((0, wi+current_peak -100));
+        the_pit.insert((8, wi+current_peak -100));
+    }
                 } else {
                     loops.insert(
-                        ((i % 5, map_floor(&the_pit, current_peak))),
-                        (i, current_peak),
+                        ((pi, map_floor(&the_pit, current_peak))),
+                        (i as usize, current_peak),
                     );
                 }
             }
@@ -86,6 +103,7 @@ where
             }
             offset.1 -= 1;
         }
+        i += 1;
     }
     current_peak
 }
@@ -140,22 +158,22 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_should_solve_sample() {
-        assert_eq!(solve("./data/sample",2022), 3068)
+    fn it_should_solve_sample1() {
+        assert_eq!(solve("./data/sample", 2022), 3068)
     }
 
     #[test]
     fn it_should_solve_sample2() {
-        assert_eq!(solve("./data/sample",50000), 3127)
+        assert_eq!(solve("./data/sample", 1000000000000), 1514285714288)
     }
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input",2022), 3127)
+        assert_eq!(solve("./data/input", 2022), 3127)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve("./data/input",50000), 500)
+        assert_eq!(solve("./data/input", 1000000000000), 500)
     }
 }
