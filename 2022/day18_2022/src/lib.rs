@@ -1,11 +1,14 @@
 use std::collections::HashSet;
 use std::path::Path;
 
-pub fn solve<P>(filename: P) -> u32
+pub fn solve<P>(filename: P) -> usize
 where
     P: AsRef<Path>,
 {
-    0
+    let mut front = HashSet::new();
+    let mut side = HashSet::new();
+    let mut top  = HashSet::new();
+    front.len() + side.len() + top.len()
 }
 
 fn solve2<P>(filename: P) -> i64
