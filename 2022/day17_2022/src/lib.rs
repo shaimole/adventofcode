@@ -23,6 +23,7 @@ where
     let mut loops = HashMap::new();
     let mut skip_done = true;
     let mut i = 0;
+    let  mut prev_i_peak = 0;
     while i <=piece_count {
         let pi = i as usize % 5;
         let piece = &pieces[pi];
@@ -31,6 +32,11 @@ where
         let mut offset: (u64, u64) = (offset_x, offset_y);
         loop {
             let x_move = x_moves[current_move % total_moves];
+            if (current_move % total_moves == 0 && current_move != 0 ) {
+                println!("{:?}",current_peak-prev_i_peak);
+                println!("{:?}",i);
+                prev_i_peak = current_peak;
+            }
             if (current_move % total_moves == 0 && current_move != 0 && !skip_done) {
                 let floor = map_floor(&the_pit, current_peak);
                 if loops.contains_key(&(pi, floor.clone())) {
