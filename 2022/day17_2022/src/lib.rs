@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
 
-pub fn solve<P>(filename: P, piece_count: u64) -> u64
+pub fn solve<P>(filename: P, mut piece_count: u64) -> u64
 where
     P: AsRef<Path>,
 {
@@ -20,11 +20,11 @@ where
     let x_moves: Vec<char> = lines[0].chars().collect();
     let total_moves = x_moves.len();
     let mut current_move = 0;
-    let mut loops = HashMap::new();
-    let mut skip_done = true;
     let mut i = 0;
-    let  mut prev_i_peak = 0;
-    while i <=piece_count {
+    let mut height_mod = 0;
+    let mut skip = true;
+    let mut prev_i_peak = 0;
+    while i <= piece_count {
         let pi = i as usize % 5;
         let piece = &pieces[pi];
         current_peak = find_peak(&the_pit, current_peak);
@@ -32,49 +32,22 @@ where
         let mut offset: (u64, u64) = (offset_x, offset_y);
         loop {
             let x_move = x_moves[current_move % total_moves];
-            if (current_move % total_moves == 0 && current_move != 0 ) {
-                println!("{:?}",current_peak-prev_i_peak);
-                println!("{:?}",i);
-                prev_i_peak = current_peak;
-            }
-            if (current_move % total_moves == 0 && current_move != 0 && !skip_done) {
-                let floor = map_floor(&the_pit, current_peak);
-                if loops.contains_key(&(pi, floor.clone())) {
-                    let prev: &(usize, u64) = loops.get(&(pi, floor.clone())).unwrap();
+            if current_move % total_moves == 0 && current_move != 0 && skip {
+                println!(" height diff {:?}", current_peak - prev_i_peak);
+                println!("current piece {:?}", i);
+                println!("times to skip {:?}", piece_count / i);
+                println!(
+                    "height to add {:?}",
+                    (current_peak - prev_i_peak) * (piece_count / i)
+                );
+                height_mod = (1700) * (piece_count / i);
 
-                    println!(
-                        " loop deteced beginning at{:?} height  {:?},blocks {:?}",
-                        prev.0,
-                        current_peak - prev.1,
-                        i - prev.0 as u64
-                    );
-                    let pieces_remaining = piece_count -i;
-                    let loops_fitting_in_remaining = pieces_remaining/ (i -prev.0 as u64);
-                    i += loops_fitting_in_remaining *(i -prev.0 as u64);
-                    let space_diff = loops_fitting_in_remaining * (current_peak - prev.1);
-                    current_peak += space_diff;
-                    for x in 1..8 {
-                        for y in 0..100 {
-                            if the_pit.contains(&(x, current_peak -space_diff - y)) {
-                                the_pit.insert((x,current_peak - y));
-                            }
-                        }
-                    }
-                    skip_done = true;
-                        println!("{:?}",i);
-                        println!("{:?}",current_peak);
-                        println!("{:?}",piece_count);
-    for wi in 0..1000000 {
-        the_pit.insert((0, wi+current_peak -100));
-        the_pit.insert((8, wi+current_peak -100));
-    }
-                    print(&the_pit,current_peak-30);
-                } else if(!skip_done) {
-                    loops.insert(
-                        ((pi, map_floor(&the_pit, current_peak))),
-                        (i as usize, current_peak),
-                    );
-                }
+                i *= piece_count / i;
+                println!("{:?}", height_mod);
+                skip = false;
+                piece_count = i + piece_count % i;
+                println!(" i {:?}", i);
+                println!(" i {:?}", current_peak + height_mod);
             }
             current_move += 1;
             match x_move {
@@ -116,7 +89,7 @@ where
         }
         i += 1;
     }
-    current_peak
+    current_peak + height_mod
 }
 
 fn find_peak(current: &HashSet<(u64, u64)>, last_peak: u64) -> u64 {
@@ -182,6 +155,11 @@ mod tests {
     #[test]
     fn it_should_solve_part_1() {
         assert_eq!(solve("./data/input", 2022), 3127)
+    }
+
+    #[test]
+    fn it_should_solve_part_1_ext() {
+        assert_eq!(solve("./data/input", 7000), 10810)
     }
 
     #[test]
