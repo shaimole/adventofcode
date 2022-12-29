@@ -34,20 +34,23 @@ where
             let x_move = x_moves[current_move % total_moves];
             if current_move % total_moves == 0 && current_move != 0 && skip {
                 println!(" height diff {:?}", current_peak - prev_i_peak);
+                prev_i_peak = current_peak;
+
                 println!("current piece {:?}", i);
-                println!("times to skip {:?}", piece_count / i);
+                println!("times to skip {:?}", piece_count - i / i);
                 println!(
                     "height to add {:?}",
-                    (current_peak - prev_i_peak) * (piece_count / i)
+                    (current_peak - prev_i_peak) * (piece_count - i / i)
                 );
-                height_mod = (1700) * (piece_count / i);
+                height_mod = (2623) * (piece_count / i - 1);
 
-                i *= piece_count / i;
-                println!("{:?}", height_mod);
+                i *= piece_count / i - 1;
                 skip = false;
-                piece_count = i + piece_count % i;
+                piece_count = i + piece_count - i % i;
                 println!(" i {:?}", i);
-                println!(" i {:?}", current_peak + height_mod);
+                println!("height to add {:?}", height_mod);
+                println!("current peak {:?}", current_peak);
+                println!(" result {:?}", current_peak + height_mod);
             }
             current_move += 1;
             match x_move {
