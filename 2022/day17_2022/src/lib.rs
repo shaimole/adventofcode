@@ -21,6 +21,7 @@ where
     let total_moves = x_moves.len();
     let mut current_move = 0;
     let mut i = 0;
+    let mut prev_i = 0;
     let mut height_mod = 0;
     let mut skip = true;
     let mut prev_i_peak = 0;
@@ -33,24 +34,24 @@ where
         loop {
             let x_move = x_moves[current_move % total_moves];
             if current_move % total_moves == 0 && current_move != 0 && skip {
-                println!(" height diff {:?}", current_peak - prev_i_peak);
+                if prev_i_peak != 0 {
+                    println!(" current step{:?}", i);
+                    println!(" left  steps {:?}", piece_count - i);
+                    println!(" height diff {:?}", current_peak - prev_i_peak);
+                    println!(" piece diff {:?}", i - prev_i);
+                    let skip_pieces = (piece_count - i) / (i - prev_i) * (i - prev_i);
+                    println!(" steps to skip  {:?}", skip_pieces);
+
+                    height_mod = (current_peak - prev_i_peak)
+                        * ((piece_count - i) / (i - prev_i) * (i - prev_i) / (i - prev_i));
+                    println!("height to add {:?}", height_mod);
+
+                    i += skip_pieces;
+                    println!(" current step{:?}", i);
+                    skip = false;
+                }
                 prev_i_peak = current_peak;
-
-                println!("current piece {:?}", i);
-                println!("times to skip {:?}", piece_count - i / i);
-                println!(
-                    "height to add {:?}",
-                    (current_peak - prev_i_peak) * (piece_count - i / i)
-                );
-                height_mod = (2623) * (piece_count / i - 1);
-
-                i *= piece_count / i - 1;
-                skip = false;
-                piece_count = i + piece_count - i % i;
-                println!(" i {:?}", i);
-                println!("height to add {:?}", height_mod);
-                println!("current peak {:?}", current_peak);
-                println!(" result {:?}", current_peak + height_mod);
+                prev_i = i;
             }
             current_move += 1;
             match x_move {
@@ -146,16 +147,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_should_solve_sample1() {
-        assert_eq!(solve("./data/sample", 2022), 3068)
-    }
-
-    #[test]
-    fn it_should_solve_sample2() {
-        assert_eq!(solve("./data/sample", 1000000000000), 1514285714288)
-    }
-
-    #[test]
     fn it_should_solve_part_1() {
         assert_eq!(solve("./data/input", 2022), 3127)
     }
@@ -167,6 +158,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve("./data/input", 1000000000000), 500)
+        assert_eq!(solve("./data/input", 1000000000000), 1542941176480)
     }
 }
