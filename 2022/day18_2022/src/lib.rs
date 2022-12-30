@@ -20,9 +20,8 @@ where
 
     let mut open_sides = 0;
     cube.iter().for_each(|point| {
-        let adj = get_adjecent(point,&size);
-        adj.iter().for_each(|a|{
-            if !cube.contains(a){
+        get_adjecent(point, &size, &-1).iter().for_each(|a| {
+            if !cube.contains(a) {
                 open_sides += 1;
             }
         });
@@ -46,13 +45,13 @@ where
             cube.insert((x, y, z));
             size = std::cmp::max(size, std::cmp::max(std::cmp::max(x, y), z))
         });
-    println!("{:?}", get_adjecent(&(0, 0, 0), &size));
+    println!("{:?}", get_adjecent(&(0, 0, 0), &size, &0));
     let mut open_sides = 0;
     open_sides
 }
 
-fn get_adjecent(point: &(i32, i32, i32), size: &i32) -> Vec<(i32, i32, i32)> {
-    let mut directions: Vec<(i32,i32,i32)> = vec![
+fn get_adjecent(point: &(i32, i32, i32), size: &i32, lower_limit: &i32) -> Vec<(i32, i32, i32)> {
+    let mut directions: Vec<(i32, i32, i32)> = vec![
         (1, 0, 0),
         (-1, 0, 0),
         (0, 1, 0),
@@ -62,14 +61,20 @@ fn get_adjecent(point: &(i32, i32, i32), size: &i32) -> Vec<(i32, i32, i32)> {
     ];
     directions
         .iter()
-        .map(|direction| (point.0 + direction.0,point.1 + direction.1,point.2 + direction.2))
-        .filter(|point| !is_out_of_bounds(point, size))
+        .map(|direction| {
+            (
+                point.0 + direction.0,
+                point.1 + direction.1,
+                point.2 + direction.2,
+            )
+        })
+        .filter(|point| !is_out_of_bounds(point, size, lower_limit))
         .collect()
 }
 
-fn is_out_of_bounds(point: &(i32, i32, i32), size: &i32) -> bool {
+fn is_out_of_bounds(point: &(i32, i32, i32), size: &i32, lower_limit: &i32) -> bool {
     for coordinate in [point.0, point.1, point.2].iter() {
-        if *coordinate   > size  + 1 || coordinate < &0 {
+        if *coordinate > size + 1 || coordinate < lower_limit {
             return true;
         }
     }
