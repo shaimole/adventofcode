@@ -45,13 +45,29 @@ where
             cube.insert((x, y, z));
             size = std::cmp::max(size, std::cmp::max(std::cmp::max(x, y), z))
         });
-    println!("{:?}", get_adjecent(&(0, 0, 0), &size, &0));
+
     let mut open_sides = 0;
+    let mut visited: HashSet<(i32, i32, i32)> = HashSet::new();
+    let mut stack: Vec<(i32, i32, i32)> = vec![(0, 0, 0)];
+    while stack.len() > 0 {
+        let point = stack.pop().unwrap();
+        if visited.contains(&point) {
+            continue;
+        }
+        visited.insert(point);
+        get_adjecent(&point, &size, &-1).iter().for_each(|a| {
+            if cube.contains(a) {
+                open_sides += 1;
+            } else {
+                stack.push(*a);
+            }
+        });
+    }
     open_sides
 }
 
 fn get_adjecent(point: &(i32, i32, i32), size: &i32, lower_limit: &i32) -> Vec<(i32, i32, i32)> {
-    let mut directions: Vec<(i32, i32, i32)> = vec![
+    let directions: Vec<(i32, i32, i32)> = vec![
         (1, 0, 0),
         (-1, 0, 0),
         (0, 1, 0),
@@ -106,6 +122,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), 64)
+        assert_eq!(solve2("./data/input"), 2556)
     }
 }
