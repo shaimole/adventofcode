@@ -64,69 +64,34 @@ where
             cube.insert((x, y, z));
             size = std::cmp::max(size, std::cmp::max(std::cmp::max(x, y), z))
         });
-
+    println!("{:?}", get_ajecent(&(0, 0, 0), &size));
     let mut open_sides = 0;
-    for z in (0..=size).rev() {
-        for y in (0..=size).rev() {
-            for x in 0..=size {
-                if cube.contains(&(x, y, z)) {
-                    if !cube.contains(&(x + 1, y, z)) {
-                        let air = &(x + 1, y, z);
-                        println!("{:?}",detect_inner_air(air, &cube, &size));
-                        open_sides += 1;
-                    }
-                    if !cube.contains(&(x - 1, y, z)) {
-                        open_sides += 1;
-                    }
-                    if !cube.contains(&(x, y + 1, z)) {
-                        open_sides += 1;
-                    }
-                    if !cube.contains(&(x, y - 1, z)) {
-                        open_sides += 1;
-                    }
-                    if !cube.contains(&(x, y, z + 1)) {
-                        open_sides += 1;
-                    }
-                    if !cube.contains(&(x, y, z - 1)) {
-                        open_sides += 1;
-                    }
-                }
-            }
-            println!("");
-        }
-        println!("");
-    }
-
     open_sides
 }
 
-fn detect_inner_air(air: &(u16, u16, u16), cube: &HashSet<(u16, u16, u16)>, size: &u16) -> i8 {
-    if &air.0 == size || &air.1 == size || &air.2 == size {
-        return -1;
+fn get_ajecent(point: &(i32, i32, i32), size: &u16) -> Vec<(i32, i32, i32)> {
+    let mut directions: Vec<(i32,i32,i32)> = vec![
+        (1, 0, 0),
+        (-1, 0, 0),
+        (0, 1, 0),
+        (0, -1, 0),
+        (0, 0, 1),
+        (0, 0, -1),
+    ];
+    directions
+        .iter()
+        .map(|direction| (point.0 + direction.0,point.1 + direction.1,point.2 + direction.2))
+        .filter(|point| !is_out_of_bounds(point, size))
+        .collect()
+}
+
+fn is_out_of_bounds(point: &(i32, i32, i32), size: &u16) -> bool {
+    for coordinate in [point.0, point.1, point.2].iter() {
+        if *coordinate as u16  > size  + 1 || coordinate < &0 {
+            return true;
+        }
     }
-    let mut sum = 0;
-    let x = air.0;
-    let y = air.1;
-    let z = air.2;
-    if !cube.contains(&(x + 1, y, z)) {
-        sum += detect_inner_air(&(x + 1, y, z), cube, size);
-    }
-    if !cube.contains(&(x - 1, y, z)) {
-        sum += detect_inner_air(&(x - 1, y, z), cube, size);
-    }
-    if !cube.contains(&(x, y + 1, z)) {
-        sum += detect_inner_air(&(x, y + 1, z), cube, size);
-    }
-    if !cube.contains(&(x, y - 1, z)) {
-        sum += detect_inner_air(&(x, y - 1, z), cube, size);
-    }
-    if !cube.contains(&(x, y, z + 1)) {
-        sum += detect_inner_air(&(x, y, z), cube, size);
-    }
-    if !cube.contains(&(x, y, z - 1)) {
-        sum += detect_inner_air(&(x, y, z), cube, size);
-    }
-    sum
+    false
 }
 
 #[cfg(test)]
