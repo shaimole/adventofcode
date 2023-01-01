@@ -13,6 +13,26 @@ struct Ressources {
 
 impl Ressources {
     fn possible_robots(&self, blueprint: &Blueprint) -> Vec<(usize, i32)> {
+        let mut robots: Vec<Ressources> = vec![];
+        for cost in blueprint.costs.iter().enumerate() {
+            let would_be_excess_res = false;
+            if would_be_eccess_res {
+                continue;
+            }
+            let mut time_to_build = 1;
+            let mut new_res = *self.clone(); 
+            let res_needed_to_build = Ressources::diff(self.amount().iter().enumerate().collect(),cost);
+            let can_build_now = Ressources::diff(self.amount().iter().enumerate().collect(),cost).filter(Ressources::all_positive).count() == 4;
+            if !can_build_now {
+        
+                let can_build_at_some_point = Ressources::diff(self.amount().iter().enumerate().collect(),cost).filter(Ressources::all_positive).count() == 4;
+                if !can_build_at_some_point {
+                    continue;
+                }
+                time_to_build = 2;
+            }
+            let 
+        }
         let res_available: Vec<i32> = self
             .amount
             .iter()
@@ -165,11 +185,11 @@ mod tests {
 
         assert_eq!(res.possible_robots(&bp), vec![(0, 22), (1, 24)]);
         let res2 = Ressources {
-            amount: vec![0, 0, 0, 0],
+            amount: vec![10, 10, 10, 0],
             income: vec![1, 2, 2, 0],
             time: 20,
         };
-        assert_eq!(res2.possible_robots(&bp), vec![(0, 22), (1, 24)]);
+        assert_eq!(res2.possible_robots(&bp), vec![(0, 19), (1, 19),(2, 19),(3, 19)]);
     }
 
     #[test]
