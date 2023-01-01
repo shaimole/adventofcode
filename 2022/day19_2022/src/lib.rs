@@ -1,9 +1,10 @@
 use std::collections::HashSet;
 use std::path::Path;
-
+#[derive(Clone, Debug)]
 struct Blueprint {
     costs: Vec<Vec<i32>>,
 }
+#[derive(Clone, Debug)]
 struct Ressources {
     income: Vec<i32>,
     amount: Vec<i32>,
@@ -11,12 +12,12 @@ struct Ressources {
 }
 
 impl Ressources {
-    fn possible_robots(&self, blueprint: &Blueprint) -> Vec<usize> {
+    fn possible_robots(&self, blueprint: &Blueprint) -> Vec<(usize, i32)> {
         let res_available: Vec<i32> = self
             .amount
             .iter()
             .enumerate()
-            .map(|(i, amt)| amt + self.income[i] * self.time)
+            .map(|(i, amount_available)| amount_available + self.income[i] * self.time)
             .collect();
         blueprint
             .costs
@@ -24,7 +25,7 @@ impl Ressources {
             .map(|costs| Ressources::diff(&res_available, costs))
             .enumerate()
             .filter(|(i, v)| Ressources::all_positive(v))
-            .map(|(i, v)| i)
+            .map(|(i, v)| (i, Ressources::execess_time(&v, &self.income)))
             .collect()
     }
     fn diff(a: &Vec<i32>, b: &Vec<i32>) -> Vec<i32> {
@@ -35,6 +36,15 @@ impl Ressources {
         sum
     }
 
+    fn execess_time(excess_res: &Vec<i32>, income: &Vec<i32>) -> i32 {
+        excess_res
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| income[*i] > 0)
+            .map(|(i, v)| return v / income[i])
+            .max()
+            .unwrap()
+    }
     fn all_positive(res_cost: &Vec<i32>) -> bool {
         res_cost.iter().filter(|v| v >= &&0).count() == 4
     }
@@ -43,7 +53,43 @@ pub fn solve<P>(filename: P) -> i32
 where
     P: AsRef<Path>,
 {
-    0
+    let blueprints = parse(filename);
+    let mut scores: Vec<i32> = vec![];
+    let mut stack: Vec<Ressources> = vec![Ressources {
+        amount: vec![0, 0, 0, 0],
+        income: vec![1, 0, 0, 0],
+        time: 26,
+    }];
+    let mut score = 0;
+    let blueprint = blueprints[0].clone();
+    while !stack.is_empty() {
+        let state = stack.pop().unwrap();
+            println!("{:?}",state.time);
+        if state.time <= 15 {
+            println!("{:?}",state);
+            score = std::cmp::max(score, state.amount[3]);
+            continue;
+        }
+        for new_state in state.possible_robots(&blueprint) {
+            let mut new_income = state.income.clone();
+            new_income[new_state.0] += 1;
+            let time_passed = state.time - new_state.1+1;
+            let mut new_amount: Vec<i32> = vec![];
+            for (i,inc) in state.income.iter().enumerate() {
+                let new_r_v = state.amount[i] + inc * time_passed - blueprint.costs[new_state.0][i];
+                new_amount.push(new_r_v);
+            }
+            println!("new res{:?}",new_amount);
+            println!("new income {:?}",new_income);
+            println!("time spend{:?}",time_passed);
+            stack.push(Ressources {
+                income: new_income,
+                amount: new_amount,
+                time: state.time- time_passed
+            });
+        }
+    }
+    score
 }
 
 fn solve2<P>(filename: P) -> i32
@@ -117,7 +163,13 @@ mod tests {
             time: 26,
         };
 
-        assert_eq!(res.possible_robots(&bp), vec![0, 1]);
+        assert_eq!(res.possible_robots(&bp), vec![(0, 22), (1, 24)]);
+        let res2 = Ressources {
+            amount: vec![0, 0, 0, 0],
+            income: vec![1, 2, 2, 0],
+            time: 20,
+        };
+        assert_eq!(res2.possible_robots(&bp), vec![(0, 22), (1, 24)]);
     }
 
     #[test]
