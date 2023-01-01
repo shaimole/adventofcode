@@ -11,9 +11,9 @@ struct Ressources {
 }
 
 impl Ressources {
-    fn possible_robots(&self, blueprint: &Blueprint) -> Vec<Ressources> {
+    fn possible_robots(&self, blueprint: &Blueprint, score: &i32) -> Vec<Ressources> {
         let mut robots: Vec<Ressources> = vec![];
-        for (index, cost) in blueprint.costs.iter().enumerate() {
+        for (index, cost) in blueprint.costs.iter().enumerate().rev() {
             let would_be_excess_res = index != 3
                 && self.income[index] >= blueprint.costs[0][index]
                 && self.income[index] >= blueprint.costs[1][index]
@@ -66,6 +66,9 @@ impl Ressources {
                 time: self.time - time_to_build,
             };
             robots.push(new_state);
+            if index == 3 && can_build_now {
+                return robots;
+            }
         }
         robots
     }
@@ -109,7 +112,7 @@ where
                 score = std::cmp::max(score, state.amount[3]);
                 continue;
             }
-            for new_state in state.possible_robots(&blueprint) {
+            for new_state in state.possible_robots(&blueprint, &score) {
                 stack.push(new_state);
             }
         }
@@ -136,7 +139,7 @@ where
         let mut stack: Vec<Ressources> = vec![Ressources {
             amount: vec![0, 0, 0, 0],
             income: vec![1, 0, 0, 0],
-            time: 28,
+            time: 32,
         }];
         while !stack.is_empty() {
             let state = stack.pop().unwrap();
@@ -146,18 +149,14 @@ where
                 score = std::cmp::max(score, state.amount[3]);
                 continue;
             }
-            for new_state in state.possible_robots(&blueprint) {
+            for new_state in state.possible_robots(&blueprint, &score) {
                 stack.push(new_state);
             }
         }
         scores.push(score);
     }
     println!("{:?}", scores);
-    scores
-        .iter()
-        .enumerate()
-        .map(|(k, v)| (k + 1) as i32 * v)
-        .sum()
+    scores[0] * scores[1] * scores[2]
 }
 
 fn parse<P>(filename: P) -> Vec<Blueprint>
@@ -225,7 +224,7 @@ mod tests {
         };
 
         assert_eq!(
-            res.possible_robots(&bp),
+            res.possible_robots(&bp, &0),
             vec![
                 Ressources {
                     amount: vec![1, 0, 0, 0],
@@ -245,7 +244,7 @@ mod tests {
             time: 20,
         };
         assert_eq!(
-            res2.possible_robots(&bp),
+            res2.possible_robots(&bp, &0),
             vec![
                 Ressources {
                     amount: vec![7, 12, 12, 0],
@@ -277,12 +276,12 @@ mod tests {
     }
     #[test]
     fn it_should_solve_sample2() {
-        assert_eq!(solve2("./data/sample"), 1)
+        assert_eq!(solve2("./data/sample"), -1)
     }
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 1)
+        assert_eq!(solve("./data/input"), 1192)
     }
 
     #[test]
