@@ -5,31 +5,28 @@ pub fn solve2<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
-    let  (max_y,mut map) = as_map(filename);
+    let (max_y, mut map) = as_map(filename);
     for i in 0..10000 {
-        map.insert((i, max_y +2));
+        map.insert((i, max_y + 2));
     }
     let mut score = 0;
-    let mut sand_pos = (500,0);
+    let mut sand_pos = (500, 0);
     while true {
-        if map.contains(&sand_pos){
+        if map.contains(&sand_pos) {
             return score;
         }
-        if !map.contains(&(sand_pos.0,sand_pos.1+1)){
-            sand_pos.1 +=1;
-
-        }else if !map.contains(&(sand_pos.0-1,sand_pos.1+1)){
-            
-            sand_pos.0 -=1;
-            sand_pos.1 +=1;
-        }else if !map.contains(&(sand_pos.0+1,sand_pos.1+1)){
-
-            sand_pos.0 +=1;
-            sand_pos.1 +=1;
-        }else{
+        if !map.contains(&(sand_pos.0, sand_pos.1 + 1)) {
+            sand_pos.1 += 1;
+        } else if !map.contains(&(sand_pos.0 - 1, sand_pos.1 + 1)) {
+            sand_pos.0 -= 1;
+            sand_pos.1 += 1;
+        } else if !map.contains(&(sand_pos.0 + 1, sand_pos.1 + 1)) {
+            sand_pos.0 += 1;
+            sand_pos.1 += 1;
+        } else {
             map.insert(sand_pos);
             score += 1;
-            sand_pos = (500,0);
+            sand_pos = (500, 0);
         }
     }
     0
@@ -39,48 +36,45 @@ fn solve<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
-    let  (max_y,mut map) = as_map(filename);
+    let (max_y, mut map) = as_map(filename);
     let mut score = 0;
-    let mut sand_pos = (500,0);
+    let mut sand_pos = (500, 0);
     for step in 1..1000000 {
-        if !map.contains(&(sand_pos.0,sand_pos.1+1)){
-            sand_pos.1 +=1;
-
-        }else if !map.contains(&(sand_pos.0-1,sand_pos.1+1)){
-            
-            sand_pos.0 -=1;
-            sand_pos.1 +=1;
-        }else if !map.contains(&(sand_pos.0+1,sand_pos.1+1)){
-
-            sand_pos.0 +=1;
-            sand_pos.1 +=1;
-        }else{
+        if !map.contains(&(sand_pos.0, sand_pos.1 + 1)) {
+            sand_pos.1 += 1;
+        } else if !map.contains(&(sand_pos.0 - 1, sand_pos.1 + 1)) {
+            sand_pos.0 -= 1;
+            sand_pos.1 += 1;
+        } else if !map.contains(&(sand_pos.0 + 1, sand_pos.1 + 1)) {
+            sand_pos.0 += 1;
+            sand_pos.1 += 1;
+        } else {
             map.insert(sand_pos);
             score += 1;
-            sand_pos = (500,0);
+            sand_pos = (500, 0);
         }
-        println!("{:?}",sand_pos);
-    for i in 0..=9 {
-        for j in 494..=503 {
-            if map.contains(&(j, i)) {
-                print!("x")
-            } else {
-                print!(".")
+        println!("{:?}", sand_pos);
+        for i in 0..=9 {
+            for j in 494..=503 {
+                if map.contains(&(j, i)) {
+                    print!("x")
+                } else {
+                    print!(".")
+                }
             }
+            println!("");
         }
-        println!("");
-    }
-    if sand_pos.1 > max_y {
-        return score;
-    }
+        if sand_pos.1 > max_y {
+            return score;
+        }
     }
     0
 }
-fn as_map<P>(filename: P) -> (u32,HashSet<(u32, u32)>)
+fn as_map<P>(filename: P) -> (u32, HashSet<(u32, u32)>)
 where
     P: AsRef<Path>,
 {
-    let mut max_y =0;
+    let mut max_y = 0;
     let lines = common::split_lines(common::read_lines(filename), " -> ");
     let mut map = HashSet::new();
     for cave in lines {
@@ -103,12 +97,12 @@ where
                     map.insert((j, y));
                 }
             }
-            max_y = std::cmp::max(max_y,y);
+            max_y = std::cmp::max(max_y, y);
             x = new_x;
             y = new_y;
         }
     }
-    (max_y,map)
+    (max_y, map)
 }
 #[cfg(test)]
 mod tests {

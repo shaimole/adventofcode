@@ -1,7 +1,5 @@
-use std::path::Path;
 use std::collections::HashSet;
-
-
+use std::path::Path;
 
 pub fn solve1<P>(filename: P) -> u16
 where
@@ -11,39 +9,51 @@ where
     return points_after_fold(input);
 }
 
-fn points_after_fold(input: Input) -> u16
-{
+fn points_after_fold(input: Input) -> u16 {
     if input.folds.len() == 0 {
-           println!("{:?}", input.points);
-        
+        println!("{:?}", input.points);
+
         return input.points.len() as u16;
     }
     return points_after_fold(fold(input));
 }
 
-fn fold(mut input: Input) -> Input 
-{
+fn fold(mut input: Input) -> Input {
     let fold_to_do = input.folds.first().unwrap();
     if fold_to_do.direction == 'y' {
-        input.points = input.points.iter().map(|point| {
-            if point[1] > fold_to_do.position {
-                return [point[0], fold_to_do.position - (point[1] - fold_to_do.position)]
-            }
-            return [point[0], point[1]];
-        }).collect::<Vec<[u32;2]>>();
+        input.points = input
+            .points
+            .iter()
+            .map(|point| {
+                if point[1] > fold_to_do.position {
+                    return [
+                        point[0],
+                        fold_to_do.position - (point[1] - fold_to_do.position),
+                    ];
+                }
+                return [point[0], point[1]];
+            })
+            .collect::<Vec<[u32; 2]>>();
     }
     if fold_to_do.direction == 'x' {
-        input.points = input.points.iter().map(|point| {
-            if point[0] > fold_to_do.position  {
-                return [ fold_to_do.position - (point[0] - fold_to_do.position) ,point[1]];
-            }
-            return [point[0], point[1]];
-        }).collect::<Vec<[u32;2]>>();
+        input.points = input
+            .points
+            .iter()
+            .map(|point| {
+                if point[0] > fold_to_do.position {
+                    return [
+                        fold_to_do.position - (point[0] - fold_to_do.position),
+                        point[1],
+                    ];
+                }
+                return [point[0], point[1]];
+            })
+            .collect::<Vec<[u32; 2]>>();
     }
     input.folds.remove(0);
     let mut uniques = HashSet::new();
     input.points.retain(|e| uniques.insert(*e));
-    
+
     return input;
 }
 
@@ -54,26 +64,30 @@ where
     let mut positions = common::read_lines(filename);
     let blank_line_pos = positions.iter().position(|line| line == "").unwrap();
     let second_part = positions.split_off(blank_line_pos);
-    let inputs = second_part.iter().filter(|line| !line.is_empty()).collect::<Vec<&String>>();
+    let inputs = second_part
+        .iter()
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<&String>>();
     let split_positions = common::split_lines(positions, ",");
     return Input {
-        points: split_positions.iter()
-        .map(|position| 
-            [
-                position[0].parse().unwrap(),
-                position[1].parse().unwrap()
-            ]
-        ).collect(),
-        folds: inputs.iter()
-        .map(|input| {
-            let split = input.split("=").map(|part| part.to_string()).collect::<Vec<String>>();
-            let fold = Fold {
-             direction: input.chars().nth(11).unwrap(),
-             position:  split[1].parse().unwrap()
-            };
-            return fold;
-        }
-        ).collect(),
+        points: split_positions
+            .iter()
+            .map(|position| [position[0].parse().unwrap(), position[1].parse().unwrap()])
+            .collect(),
+        folds: inputs
+            .iter()
+            .map(|input| {
+                let split = input
+                    .split("=")
+                    .map(|part| part.to_string())
+                    .collect::<Vec<String>>();
+                let fold = Fold {
+                    direction: input.chars().nth(11).unwrap(),
+                    position: split[1].parse().unwrap(),
+                };
+                return fold;
+            })
+            .collect(),
     };
 }
 
@@ -87,7 +101,7 @@ where
 #[derive(Debug)]
 pub struct Fold {
     direction: char,
-    position: u32
+    position: u32,
 }
 impl PartialEq for Fold {
     fn eq(&self, other: &Self) -> bool {
@@ -153,11 +167,11 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_1() {
-         assert_eq!(super::solve1("././data/input1"), 788)
+        assert_eq!(super::solve1("././data/input1"), 788)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-         assert_eq!(super::solve1("././data/input2"), 100) // did visulization with python and online compiler
+        assert_eq!(super::solve1("././data/input2"), 100) // did visulization with python and online compiler
     }
 }
