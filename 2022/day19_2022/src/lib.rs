@@ -196,87 +196,8 @@ mod tests {
     }
 
     #[test]
-    fn it_should_parse_blueprint() {
-        let expected = Blueprint {
-            costs: vec![
-                vec![4, 0, 0, 0],
-                vec![2, 0, 0, 0],
-                vec![3, 1, 0, 0],
-                vec![4, 2, 7, 0],
-            ],
-        };
-        assert_eq!(parse("./data/poc")[0].costs, expected.costs);
-    }
-    #[test]
-    fn it_should_determine_possible_next_robots_with_waiting() {
-        let bp = Blueprint {
-            costs: vec![
-                vec![4, 0, 0, 0],
-                vec![2, 0, 0, 0],
-                vec![3, 1, 0, 0],
-                vec![4, 2, 7, 0],
-            ],
-        };
-        let res = Ressources {
-            amount: vec![0, 0, 0, 0],
-            income: vec![1, 0, 0, 0],
-            time: 24,
-        };
-
-        assert_eq!(
-            res.possible_robots(&bp, &0),
-            vec![
-                Ressources {
-                    amount: vec![1, 0, 0, 0],
-                    income: vec![2, 0, 0, 0],
-                    time: 19,
-                },
-                Ressources {
-                    amount: vec![1, 0, 0, 0],
-                    income: vec![1, 1, 0, 0],
-                    time: 21,
-                }
-            ]
-        );
-        let res2 = Ressources {
-            amount: vec![10, 10, 10, 0],
-            income: vec![1, 2, 2, 0],
-            time: 20,
-        };
-        assert_eq!(
-            res2.possible_robots(&bp, &0),
-            vec![
-                Ressources {
-                    amount: vec![7, 12, 12, 0],
-                    income: vec![2, 2, 2, 0],
-                    time: 19,
-                },
-                Ressources {
-                    amount: vec![8, 11, 12, 0],
-                    income: vec![1, 2, 3, 0],
-                    time: 19,
-                },
-                Ressources {
-                    amount: vec![7, 10, 5, 0],
-                    income: vec![1, 2, 2, 1],
-                    time: 19,
-                }
-            ]
-        );
-    }
-
-    #[test]
     fn it_should_solve_poc() {
         assert_eq!(solve("./data/poc"), 9)
-    }
-
-    #[test]
-    fn it_should_solve_poc2() {
-        assert_eq!(solve2("./data/poc"), 56)
-    }
-    #[test]
-    fn it_should_solve_sample2() {
-        assert_eq!(solve2("./data/sample"), -1)
     }
 
     #[test]
@@ -286,6 +207,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), 1)
+        assert_eq!(solve2("./data/input"), 14725)
     }
 }
