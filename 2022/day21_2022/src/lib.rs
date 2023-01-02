@@ -91,7 +91,6 @@ where
         }
     }
 
-    println!("{:?}", known);
     let unknown_map: HashMap<String, (String, String, String)> = unknown
         .iter()
         .map(|v| (v[0].clone(), (v[1].clone(), v[2].clone(), v[3].clone())))
@@ -103,7 +102,6 @@ where
     } else {
         known.insert(root.1.clone(), *known.get(&root.0).unwrap());
     }
-    println!("{:?}", known);
     while !known.contains_key(&"humn".to_string()) {
         for (key, unknown) in unknown_map.iter() {
             if !known.contains_key(key) {
@@ -116,16 +114,15 @@ where
                 let monkey_nr = match unknown.2.as_str() {
                     "*" => a / b,
                     "+" => a - b,
-                    "-" => a + b,
-                    "/" => a * b,
+                    "-" => b - a,
+                    "/" => a / b,
                     _ => unreachable!(),
                 };
+
                 known.insert(unknown.1.clone(), monkey_nr);
-            }else 
-            if known.contains_key(&unknown.1) {
+            } else if known.contains_key(&unknown.1) {
                 let a: i128 = *known.get(key).unwrap();
                 let b: i128 = *known.get(&unknown.1).unwrap();
-                
                 let monkey_nr = match unknown.2.as_str() {
                     "*" => a / b,
                     "+" => a - b,
@@ -134,7 +131,6 @@ where
                     _ => unreachable!(),
                 };
                 known.insert(unknown.0.clone(), monkey_nr);
-            println!("{:?}", (a,b,monkey_nr));
             }
         }
     }
@@ -162,6 +158,6 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), -1)
+        assert_eq!(solve2("./data/input"), 3099532691300)
     }
 }
