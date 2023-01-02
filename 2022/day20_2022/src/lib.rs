@@ -43,34 +43,14 @@ fn rotate(code: &mut Vec<(usize, i128)>, i: usize) {
     for j in 0..code.len() {
         if code[j].0 == i {
             let to_move = code[j].clone();
-            // println!("moving {:?}", to_move.1);
-            // println!("moving from {:?}", j);
-
-            let moving = to_move.1 % len as i128;
-            // println!("moving distance {:?}", moving);
-
-            let mut new_pos = j as i128 + moving;
+            code.remove(j);
+            let mut new_pos = j as i128 + to_move.1;
             // println!("new pos {:?}", new_pos);
 
-            code.remove(j);
-            let offset = to_move.1 / len as i128;
-            if offset != 0 {
-                // println!("care for self");
-            }
-            if new_pos <= 0 {
-                new_pos += (len - 1) as i128;
-            }
-            if new_pos == 0 {
-                new_pos = len as i128 - 1;
-            }
-            if new_pos > len as i128 {
-                new_pos += 1;
-            }
-            new_pos += offset;
 
-            new_pos %= len as i128;
+            new_pos = new_pos.rem_euclid(code.len() as i128);
             if new_pos <= 0 {
-                new_pos += (len - 1) as i128;
+                new_pos += code.len() as i128;
             }
             // println!("new pos bounded{:?}", new_pos);
 
