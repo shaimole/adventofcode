@@ -1,29 +1,47 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-fn print(map: &HashMap<((i64, i64), u8)>, max: &(i64, i64)) {
+fn print(map: &HashMap<((i64, i64), char)>, max: &(i64, i64)) {
     for y in (0..max.1).rev() {
         for x in 0..max.0 {
             if !map.contains_key(&(x, y)) {
                 print!(" ");
             }
-            if map.get(&(x, y)) == 0 {
-                print!(".");
-            }
-            if map.get(&(x, y)) == 1 {
-                print!("#");
-            }
-            if map.get(&(x, y)) == 2 {
-                print!("0");
-            }
+            print!(map.get(&x,y));
         }
         println!("");
     }
 }
+
+pub fn parse<P>(filename: P) ->  (HashMap<((i64, i64), char))>, (i64,i64), Vec<char>)>
+where
+    P: AsRef<Path>,
+{
+    let mut max_x = 0;
+    let mut map: HashMap<((i64, i64), char))> = HashMap::new();
+    let lines = common::read_lines(filename);
+    for y in 0..lines.len() {
+        if line.as_str() == "" {
+            break;
+        }
+        for (x,c) in 0..line[y].chars().enumerate(){
+            if c == ' ' {
+                continue;
+            }
+            map.insert((x,y),c);
+            max_x = std::cmp::max(x,max_x);
+        }
+    }
+    (map,(max_x,lines.len() as i64 - 2),lines[lines.len()-1].chars().collect()
+     )
+}
+
 pub fn solve<P>(filename: P) -> i128
 where
     P: AsRef<Path>,
 {
+    let (map,max,movement) = parse(filename);
+    print(&map,&max);
     0
 }
 
