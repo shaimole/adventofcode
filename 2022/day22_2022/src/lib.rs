@@ -51,10 +51,8 @@ fn parse_movement(line: &String) -> Vec<(usize, usize)> {
         .map(|found| {
             let as_str = found.as_str();
             let direction: usize = match as_str.chars().nth(0).unwrap() {
-                'R' => 0,
-                'D' => 1,
-                'L' => 2,
-                'U' => 3,
+                'R' => 1,
+                'L' => 3,
                 _ => unreachable!(),
             };
 
@@ -63,14 +61,55 @@ fn parse_movement(line: &String) -> Vec<(usize, usize)> {
         })
         .collect()
 }
-pub fn solve<P>(filename: P) -> i128
+pub fn solve<P>(filename: P) -> usize
 where
     P: AsRef<Path>,
 {
     let (map, max, movement) = parse(filename);
     print(&map, &max);
-    println!("{:?}",movement);
-    0
+    let mut direction = 0;
+    let directions = vec![(1, 0), (0, 1), (-1, 0), (0, -1)];
+    let mut position = find_outer_edge(&map, &max, &0, &0, &direction);
+    for (turn, steps) in movement.iter() {}
+    1000 * position.1 + 4 * position.0 + direction
+}
+
+fn find_outer_edge(
+    map: &HashMap<(usize, usize), char>,
+    max: &(usize,usize),
+    y: &usize,
+    x: &usize,
+    direction: &usize,
+) -> (usize, usize) {
+    if direction == &0 {
+        for i in 0..max.0 {
+            if map.contains_key(&(i, *y)) {
+                return (i, *y);
+            }
+        }
+    }
+    if direction == &1 {
+        for i in 0..max.1 {
+            if map.contains_key(&(*x, i)) {
+                return (*x, i);
+            }
+        }
+    }
+    if direction == &2 {
+        for i in (0..max.0).rev() {
+            if map.contains_key(&(i, *y)) {
+                return (i, *y);
+            }
+        }
+    }
+    if direction == &3 {
+        for i in (0..max.1).rev() {
+            if map.contains_key(&(*x, i)) {
+                return (*x, i);
+            }
+        }
+    }
+    unreachable!();
 }
 
 pub fn solve2<P>(filename: P) -> i128
@@ -92,15 +131,15 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(solve2("./data/sample"), -1)
+        assert_eq!(solve2("./data/sample"), 2)
     }
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), -1)
+        assert_eq!(solve("./data/input"), 2)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), -1)
+        assert_eq!(solve2("./data/input"), 2)
     }
 }
