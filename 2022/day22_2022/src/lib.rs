@@ -1,9 +1,13 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize)) {
+fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize), pos: &(usize, usize)) {
     for y in 0..max.1 {
         for x in 0..max.0 {
+            if pos == &(x, y) {
+                print!("0");
+                continue;
+            }
             if !map.contains_key(&(x, y)) {
                 print!(" ");
                 continue;
@@ -66,44 +70,68 @@ where
     P: AsRef<Path>,
 {
     let (map, max, movement) = parse(filename);
-    print(&map, &max);
     let mut direction = 0;
-    let directions = vec![(1, 0), (0, 1), (-1, 0), (0, -1)];
+    let directions: Vec<(i64, i64)> = vec![(1, 0), (0, 1), (-1, 0), (0, -1)];
     let mut position = find_outer_edge(&map, &max, &0, &0, &direction);
-    for (turn, steps) in movement.iter() {}
-    1000 * position.1 + 4 * position.0 + direction
+    direction = 3;
+    for (turn, steps) in movement.iter() {
+        direction = (direction + turn) % directions.len();
+        let velocity = directions[direction];
+        for i in 0..*steps {
+            //println!("velo {:?}",velocity);
+            //println!("ditection  {:?}", direction);
+            //println!("pos {:?}",position);
+            //print(&map, &max, &position);
+            //println!("");
+
+            let mut target = (
+                (position.0 as i64 + velocity.0) as usize,
+                (position.1 as i64 + velocity.1) as usize,
+            );
+            if !map.contains_key(&(target)) {
+                target = find_outer_edge(&map, &max, &position.0, &position.1, &direction);
+            }
+            if map.get(&target).unwrap() == &'#' {
+                break;
+            }
+            position = target;
+        }
+    }
+            println!("pos {:?}",position);
+    1000 * (position.1+1) +  4 *  (1+position.0) + direction
 }
 
 fn find_outer_edge(
     map: &HashMap<(usize, usize), char>,
-    max: &(usize,usize),
-    y: &usize,
+    max: &(usize, usize),
     x: &usize,
+    y: &usize,
     direction: &usize,
 ) -> (usize, usize) {
+    println!("{:?}", direction);
     if direction == &0 {
-        for i in 0..max.0 {
+        for i in 0..=max.0 {
             if map.contains_key(&(i, *y)) {
                 return (i, *y);
             }
         }
     }
     if direction == &1 {
-        for i in 0..max.1 {
+        for i in 0..=max.1 {
             if map.contains_key(&(*x, i)) {
                 return (*x, i);
             }
         }
     }
     if direction == &2 {
-        for i in (0..max.0).rev() {
+        for i in (0..=max.0).rev() {
             if map.contains_key(&(i, *y)) {
                 return (i, *y);
             }
         }
     }
     if direction == &3 {
-        for i in (0..max.1).rev() {
+        for i in (0..=max.1).rev() {
             if map.contains_key(&(*x, i)) {
                 return (*x, i);
             }
