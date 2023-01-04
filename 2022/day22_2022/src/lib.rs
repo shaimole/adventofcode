@@ -14,7 +14,13 @@ fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize)) {
     }
 }
 
-pub fn parse<P>(filename: P) -> (HashMap<(usize, usize), char>, (usize, usize), Vec<char>)
+pub fn parse<P>(
+    filename: P,
+) -> (
+    HashMap<(usize, usize), char>,
+    (usize, usize),
+    Vec<(usize, usize)>,
+)
 where
     P: AsRef<Path>,
 {
@@ -33,19 +39,37 @@ where
             max_x = std::cmp::max(x, max_x);
         }
     }
-    (
-        map,
-        (max_x, lines.len() - 2),
-        lines[lines.len() - 1].chars().collect(),
-    )
+    let movement = parse_movement(&lines[lines.len() - 1]);
+    (map, (max_x, lines.len() - 2), movement)
 }
 
+fn parse_movement(line: &String) -> Vec<(usize, usize)> {
+    let parse = "R".to_owned() + &line.clone();
+    use regex::Regex;
+    let re: Regex = Regex::new(r"[A-Z][0-9]*").unwrap();
+    re.find_iter(&parse)
+        .map(|found| {
+            let as_str = found.as_str();
+            let direction: usize = match as_str.chars().nth(0).unwrap() {
+                'R' => 0,
+                'D' => 1,
+                'L' => 2,
+                'U' => 3,
+                _ => unreachable!(),
+            };
+
+            let amount: usize = as_str[1..].parse().unwrap();
+            return (direction, amount);
+        })
+        .collect()
+}
 pub fn solve<P>(filename: P) -> i128
 where
     P: AsRef<Path>,
 {
     let (map, max, movement) = parse(filename);
     print(&map, &max);
+    println!("{:?}",movement);
     0
 }
 
