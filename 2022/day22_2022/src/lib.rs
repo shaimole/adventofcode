@@ -1,47 +1,51 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-fn print(map: &HashMap<((i64, i64), char)>, max: &(i64, i64)) {
-    for y in (0..max.1).rev() {
+fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize)) {
+    for y in 0..max.1 {
         for x in 0..max.0 {
             if !map.contains_key(&(x, y)) {
                 print!(" ");
+                continue;
             }
-            print!(map.get(&x,y));
+            print!("{}", map.get(&(x, y)).unwrap());
         }
         println!("");
     }
 }
 
-pub fn parse<P>(filename: P) ->  (HashMap<((i64, i64), char))>, (i64,i64), Vec<char>)>
+pub fn parse<P>(filename: P) -> (HashMap<(usize, usize), char>, (usize, usize), Vec<char>)
 where
     P: AsRef<Path>,
 {
     let mut max_x = 0;
-    let mut map: HashMap<((i64, i64), char))> = HashMap::new();
+    let mut map: HashMap<(usize, usize), char> = HashMap::new();
     let lines = common::read_lines(filename);
     for y in 0..lines.len() {
-        if line.as_str() == "" {
+        if lines[y].as_str() == "" {
             break;
         }
-        for (x,c) in 0..line[y].chars().enumerate(){
+        for (x, c) in lines[y].chars().enumerate() {
             if c == ' ' {
                 continue;
             }
-            map.insert((x,y),c);
-            max_x = std::cmp::max(x,max_x);
+            map.insert((x, y), c);
+            max_x = std::cmp::max(x, max_x);
         }
     }
-    (map,(max_x,lines.len() as i64 - 2),lines[lines.len()-1].chars().collect()
-     )
+    (
+        map,
+        (max_x, lines.len() - 2),
+        lines[lines.len() - 1].chars().collect(),
+    )
 }
 
 pub fn solve<P>(filename: P) -> i128
 where
     P: AsRef<Path>,
 {
-    let (map,max,movement) = parse(filename);
-    print(&map,&max);
+    let (map, max, movement) = parse(filename);
+    print(&map, &max);
     0
 }
 
@@ -64,7 +68,7 @@ mod tests {
 
     #[test]
     fn it_should_solve_sample_part2() {
-        assert_eq!(solve2("./data/sample") - 1)
+        assert_eq!(solve2("./data/sample"), -1)
     }
     #[test]
     fn it_should_solve_part_1() {
