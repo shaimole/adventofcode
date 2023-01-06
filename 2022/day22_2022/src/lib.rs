@@ -1,11 +1,21 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize), pos: &(usize, usize)) {
-    for y in 0..max.1 {
-        for x in 0..max.0 {
+fn print(
+    map: &HashMap<(usize, usize), char>,
+    max: &(usize, usize),
+    pos: &(usize, usize),
+    direction: &usize,
+) {
+    for y in 0..=max.1 {
+        for x in 0..=max.0 {
             if pos == &(x, y) {
-                print!("0");
+                match direction {
+                    0 => print!(">"),
+                    1 => print!("v"),
+                    2 => print!("<"),
+                    _ => print!("^"),
+                }
                 continue;
             }
             if !map.contains_key(&(x, y)) {
@@ -13,6 +23,29 @@ fn print(map: &HashMap<(usize, usize), char>, max: &(usize, usize), pos: &(usize
                 continue;
             }
             print!("{}", map.get(&(x, y)).unwrap());
+        }
+        println!("");
+    }
+}
+
+fn printcube(
+    map: &HashMap<((usize, usize), usize), ((usize, usize), usize)>,
+    max: &(usize, usize),
+) {
+    for y in 0..=max.1 {
+        for x in 0..=max.0 {
+            if map.contains_key(&((x, y), 1)) {
+                assert_eq!(map.get(&((x, y), 1)).unwrap().1, 3);
+                print!("v");
+            } else if map.contains_key(&((x, y), 2)) {
+                print!("<");
+            } else if map.contains_key(&((x, y), 0)) {
+                print!(">");
+            } else if map.contains_key(&((x, y), 3)) {
+                print!("^");
+            } else {
+                print!(" ");
+            }
         }
         println!("");
     }
@@ -81,7 +114,6 @@ where
             //println!("velo {:?}",velocity);
             //println!("ditection  {:?}", direction);
             //println!("pos {:?}",position);
-            //print(&map, &max, &position);
             //println!("");
 
             let mut target = (
@@ -97,8 +129,9 @@ where
             position = target;
         }
     }
-            println!("pos {:?}",position);
-    1000 * (position.1+1) +  4 *  (1+position.0) + direction
+    print(&map, &max, &position, &direction);
+
+    1000 * (position.1 + 1) + 4 * (1 + position.0) + direction
 }
 
 fn find_outer_edge(
@@ -140,30 +173,153 @@ fn find_outer_edge(
     unreachable!();
 }
 
-pub fn solve2<P>(filename: P) -> i128
+pub fn solve2<P>(filename: P) -> usize
 where
     P: AsRef<Path>,
 {
-    0
+    let (map, max, movement) = parse(filename);
+    let mut direction = 0;
+    let directions: Vec<(i64, i64)> = vec![(1, 0), (0, 1), (-1, 0), (0, -1)];
+    let mut position = find_outer_edge(&map, &max, &0, &0, &direction);
+    let cube_map = get_destinations_cube();
+    println!("{:?}", movement.len());
+    printcube(&cube_map, &max);
+    return 0;
+    direction = 3;
+    for (turn, steps) in movement.iter().take(1200) {
+        direction = (direction + turn) % directions.len();
+        for _ in 0..*steps {
+            let velocity = directions[direction];
+
+            //println!("velo {:?}",velocity);
+            //println!("ditection  {:?}", direction);
+            //println!("pos {:?}",position);
+            //println!("");
+
+            let mut target = (
+                (position.0 as i64 + velocity.0) as usize,
+                (position.1 as i64 + velocity.1) as usize,
+            );
+            let mut new_direction = direction;
+            if !map.contains_key(&(target)) {
+                println!("pos {:?}", &(position, direction));
+                println!("target {:?}", target);
+
+                print(&map, &max, &position, &direction);
+
+                (target, new_direction) = *cube_map.get(&(position, direction)).unwrap();
+                println!("after transition {:?}", (target, new_direction));
+                print(&map, &max, &target, &new_direction);
+            }
+            if map.get(&target).unwrap() == &'#' {
+                break;
+            }
+            direction = new_direction;
+            position = target;
+        }
+    }
+
+    1000 * (position.1 + 1) + 4 * (1 + position.0) + direction
 }
 
+fn get_destinations_cube() -> HashMap<((usize, usize), usize), ((usize, usize), usize)> {
+    let side_len: usize = 50;
+
+    let mut destinations: HashMap<((usize, usize), usize), ((usize, usize), usize)> =
+        HashMap::new();
+
+    // cube has this shape
+    //  12
+    //  3
+    // 45
+    // 6
+    let offsets = vec![
+        (side_len, 0),
+        (side_len * 2, 0),
+        (side_len, side_len),
+        (0, side_len * 2),
+        (side_len, side_len * 2),
+        (0, side_len * 3),
+    ];
+    for i in 0..side_len {
+        // 1
+        // North <->  West 6
+        // 1.x = 6.y
+        let source = (i + offsets[0].0, offsets[0].1);
+        let target = (offsets[5].0, i + offsets[5].1);
+        destinations.insert((source, 3), (target, 0));
+        destinations.insert((target, 2), (source, 1));
+
+        // West  <-> 4 West
+        // 1.y = 4.y.max - 1.y
+        let source = (offsets[0].0, i + offsets[0].1);
+        let target = (offsets[3].0, offsets[3].1 + side_len - i);
+        destinations.insert((source, 2), (target, 0));
+        destinations.insert((target, 2), (source, 0));
+
+        // 2
+        // North <-> 6 South
+        // 2.x = 6.x
+        let source = (i + offsets[1].0, offsets[1].1);
+        let target = (i + offsets[5].0, offsets[5].1 + side_len - 1);
+        destinations.insert((source, 3), (target, 3));
+        destinations.insert((target, 1), (source, 1));
+
+        // East <-> 5 East
+        // 2.y = 5.y.max - 5.y
+        let source = (offsets[1].0 + side_len - 1, offsets[1].1 + i);
+        let target = (offsets[4].0 + side_len - 1, offsets[4].1 + side_len - i - 1);
+        destinations.insert((source, 0), (target, 2));
+        destinations.insert((target, 0), (source, 2));
+        // South <-> 3 East
+        // 2.x = 3.y
+        let source = (offsets[1].0 + i, offsets[1].1 + side_len - 1);
+        let target = (offsets[2].0 + side_len - 1, offsets[2].1 + i);
+        destinations.insert((source, 1), (target, 2));
+        destinations.insert((target, 0), (source, 3));
+
+        // 3
+        // East solved by 2
+        // West <-> 4 North
+        // 3.y = 4.x
+        let source = (offsets[2].0, i + offsets[2].1);
+        let target = (offsets[3].0 + i, offsets[3].1);
+        destinations.insert((source, 2), (target, 1));
+        destinations.insert((target, 3), (source, 0));
+        // 4
+        // North solved by 3
+        // West solved by 1
+
+        // 5
+        // East solved by 2
+        // South <-> 6 East
+        // 5.x = 6.y
+        let source = (offsets[4].0 + i, offsets[4].1 + side_len - 1);
+        let target = (offsets[5].0 + side_len - 1, offsets[5].1 + i);
+        destinations.insert((source, 1), (target, 2));
+        destinations.insert((target, 0), (source, 1));
+        // 6
+        // West solved by 1
+        // South solved by 2
+        // East solved by 5
+    }
+
+    destinations
+}
 #[cfg(test)]
 mod tests {
 
     use super::*;
 
     #[test]
+
     fn it_should_solve_sample() {
         assert_eq!(solve("./data/sample"), 6032)
     }
 
     #[test]
-    fn it_should_solve_sample_part2() {
-        assert_eq!(solve2("./data/sample"), 2)
-    }
-    #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 2)
+        assert_eq!(solve("./data/input"), 191010)
     }
 
     #[test]
