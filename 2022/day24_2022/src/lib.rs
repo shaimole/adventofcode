@@ -16,13 +16,10 @@ fn debug(
 ) {
     for y in (-1..=*size_y).rev() {
         for x in -1..=*size_x {
-            if !blizzards.contains_key(&(x, y)) {
-                if &(x,y) == pos{
-
+            if &(x, y) == pos {
                 print!("E")
-                } else {
+            } else if !blizzards.contains_key(&(x, y)) {
                 print!(".")
-                }
             } else {
                 let symbol = blizzards.get(&(x, y)).unwrap();
                 print!("{symbol}");
@@ -31,25 +28,37 @@ fn debug(
         println!("");
     }
 }
-pub fn solve<P>(filename: P) -> u32
+pub fn solve<P>(filename: P) -> i64
 where
     P: AsRef<Path>,
 {
     let (blizzards_start, size_x, size_y, start, end) = parse(filename);
 
-    for i in 0..10 {
-
-        debug(&move_blizzards(&blizzards_start, &size_x, &size_y, &(i as u32)),&size_x, &size_y, &start, &end,&start);
-        println!("");
-    }
-    return 0;
+    // for i in 0..10 {
+    //     debug(
+    //         &move_blizzards(&blizzards_start, &size_x, &size_y, &(i as u32)),
+    //         &size_x,
+    //         &size_y,
+    //         &start,
+    //         &end,
+    //         &start,
+    //     );
+    //     println!("");
+    // }
+    // return 0;
     let mut queue = VecDeque::new();
+    let mut seen = HashSet::new();
     queue.push_back((start, 1));
     while let Some((pos, time)) = queue.pop_front() {
-        if queue.len() > 10 {
-            break;
+        // println!("{:?}", (pos, time));
+        if !seen.insert((pos, time % (size_x * size_y))) {
+            continue;
         }
-        if pos == (size_x, size_y) {
+        if pos == (size_x - 1, 1) {
+            // let moved = move_blizzards(&blizzards_start, &size_x, &size_y, &time);
+
+            // debug(&moved, &size_x, &size_y, &start, &end, &pos);
+
             return time + 1;
         }
         let moved = move_blizzards(&blizzards_start, &size_x, &size_y, &time);
@@ -57,21 +66,21 @@ where
             .iter()
             .map(|(x, y)| (pos.0 + x, pos.1 + y))
             .filter(|(x, y)| !moved.contains_key(&(*x, *y)))
-            .filter(|(x, y)| (x >= &0 && y >= &0 )|| (*x,*y)  == start)
-            .filter(|(x, y)| x < &size_x && y < &size_y)
+            .filter(|(x, y)| (x >= &0 && y >= &0) || (*x, *y) == start)
+            .filter(|(x, y)| (x < &size_x && y < &size_y) || (*x, *y) == start)
             .for_each(|option| queue.push_back((option, time + 1)));
-        println!("{:?}",pos);
-        debug(&moved, &size_x, &size_y, &start, &end, &pos);
+        // println!("{:?}", queue.len());
+        // debug(&moved, &size_x, &size_y, &start, &end, &pos);
     }
 
-    0
+    unreachable!();
 }
 
 fn move_blizzards(
     blizzards: &HashMap<(i64, i64), char>,
     size_x: &i64,
     size_y: &i64,
-    time: &u32,
+    time: &i64,
 ) -> HashMap<(i64, i64), char> {
     blizzards
         .iter()
@@ -79,8 +88,8 @@ fn move_blizzards(
             let direction = blizzard_direction(c);
             let mut n_direction = (
                 (
-                    (x + direction.0 * *time as i64) % size_x,
-                    (y + direction.1 * *time as i64) % size_y,
+                    (x + direction.0 * *time).rem_euclid(*size_x),
+                    (y + direction.1 * *time).rem_euclid(*size_y),
                 ),
                 *c,
             );
@@ -145,7 +154,7 @@ mod tests {
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 1)
+        assert_eq!(solve("./data/input"), 326)
     }
 
     #[test]
