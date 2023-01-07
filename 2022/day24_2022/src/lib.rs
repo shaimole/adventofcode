@@ -18,6 +18,10 @@ fn debug(
         for x in -1..=*size_x {
             if &(x, y) == pos {
                 print!("E")
+            } else if &(x, y) == start {
+                print!("S")
+            } else if &(x, y) == finish {
+                print!("F")
             } else if !blizzards.contains_key(&(x, y)) {
                 print!(".")
             } else {
@@ -28,49 +32,45 @@ fn debug(
         println!("");
     }
 }
-pub fn solve<P>(filename: P) -> i64
+pub fn solve<P>(filename: P, trips: u8) -> i64
 where
     P: AsRef<Path>,
 {
-    let (blizzards_start, size_x, size_y, start, end) = parse(filename);
+    let (blizzards_start, size_x, size_y, mut start, mut end) = parse(filename);
 
-    // for i in 0..10 {
-    //     debug(
-    //         &move_blizzards(&blizzards_start, &size_x, &size_y, &(i as u32)),
-    //         &size_x,
-    //         &size_y,
-    //         &start,
-    //         &end,
-    //         &start,
-    //     );
-    //     println!("");
-    // }
-    // return 0;
     let mut queue = VecDeque::new();
-    let mut seen = HashSet::new();
-    queue.push_back((start, 1));
+    let mut visited = HashSet::new();
+    let mut trip = 1;
+    println!("{:?}", (start, end));
+    queue.push_back((start, 0));
     while let Some((pos, time)) = queue.pop_front() {
-        // println!("{:?}", (pos, time));
-        if !seen.insert((pos, time % (size_x * size_y))) {
+        if !visited.insert((pos, time % (size_x * size_y))) {
             continue;
         }
-        if pos == (size_x - 1, 1) {
-            // let moved = move_blizzards(&blizzards_start, &size_x, &size_y, &time);
+        if pos == end {
+            if trip == trips {
+                return time - 1;
+            } else {
+                queue = VecDeque::new();
+                visited = HashSet::new();
+                let tmp = end.clone();
+                end = start.clone();
+                start = tmp;
 
-            // debug(&moved, &size_x, &size_y, &start, &end, &pos);
+                queue.push_back((pos, time));
 
-            return time + 1;
+                trip += 1;
+                continue;
+            }
         }
         let moved = move_blizzards(&blizzards_start, &size_x, &size_y, &time);
         MOVES
             .iter()
             .map(|(x, y)| (pos.0 + x, pos.1 + y))
             .filter(|(x, y)| !moved.contains_key(&(*x, *y)))
-            .filter(|(x, y)| (x >= &0 && y >= &0) || (*x, *y) == start)
-            .filter(|(x, y)| (x < &size_x && y < &size_y) || (*x, *y) == start)
+            .filter(|(x, y)| (x >= &0 && y >= &0) || (*x, *y) == start || (*x, *y) == end)
+            .filter(|(x, y)| (x < &size_x && y < &size_y) || (*x, *y) == start || (*x, *y) == end)
             .for_each(|option| queue.push_back((option, time + 1)));
-        // println!("{:?}", queue.len());
-        // debug(&moved, &size_x, &size_y, &start, &end, &pos);
     }
 
     unreachable!();
@@ -128,7 +128,7 @@ where
     let lines = common::read_lines(filename);
     let max_y = lines.iter().count() as i64 - 2;
     let max_x = lines[0].chars().count() as i64 - 2;
-    let finish = (max_x, -1);
+    let finish = (max_x - 1, -1);
     let start = (0, max_y);
     lines.iter().rev().enumerate().for_each(|(y, line)| {
         line.chars().enumerate().for_each(|(x, c)| {
@@ -144,21 +144,21 @@ mod tests {
     use super::*;
     #[test]
     fn it_should_solve_sample() {
-        assert_eq!(solve("./data/sample"), 18)
+        assert_eq!(solve("./data/sample", 1), 18)
     }
 
     #[test]
     fn it_should_solve_sample2() {
-        assert_eq!(solve2("./data/sample"), 1)
+        assert_eq!(solve("./data/sample", 3), 54)
     }
 
     #[test]
     fn it_should_solve_part_1() {
-        assert_eq!(solve("./data/input"), 326)
+        assert_eq!(solve("./data/input", 1), 326)
     }
 
     #[test]
     fn it_should_solve_part_2() {
-        assert_eq!(solve2("./data/input"), 1)
+        assert_eq!(solve("./data/input", 3), 976)
     }
 }
