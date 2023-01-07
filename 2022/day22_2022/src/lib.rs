@@ -182,11 +182,8 @@ where
     let directions: Vec<(i64, i64)> = vec![(1, 0), (0, 1), (-1, 0), (0, -1)];
     let mut position = find_outer_edge(&map, &max, &0, &0, &direction);
     let cube_map = get_destinations_cube();
-    println!("{:?}", movement.len());
-    printcube(&cube_map, &max);
-    return 0;
     direction = 3;
-    for (turn, steps) in movement.iter().take(1200) {
+    for (turn, steps) in movement.iter() {
         direction = (direction + turn) % directions.len();
         for _ in 0..*steps {
             let velocity = directions[direction];
@@ -205,11 +202,9 @@ where
                 println!("pos {:?}", &(position, direction));
                 println!("target {:?}", target);
 
-                print(&map, &max, &position, &direction);
 
                 (target, new_direction) = *cube_map.get(&(position, direction)).unwrap();
                 println!("after transition {:?}", (target, new_direction));
-                print(&map, &max, &target, &new_direction);
             }
             if map.get(&target).unwrap() == &'#' {
                 break;
@@ -253,7 +248,7 @@ fn get_destinations_cube() -> HashMap<((usize, usize), usize), ((usize, usize), 
         // West  <-> 4 West
         // 1.y = 4.y.max - 1.y
         let source = (offsets[0].0, i + offsets[0].1);
-        let target = (offsets[3].0, offsets[3].1 + side_len - i);
+        let target = (offsets[3].0, offsets[3].1 + side_len - i-1);
         destinations.insert((source, 2), (target, 0));
         destinations.insert((target, 2), (source, 0));
 
@@ -297,7 +292,7 @@ fn get_destinations_cube() -> HashMap<((usize, usize), usize), ((usize, usize), 
         let source = (offsets[4].0 + i, offsets[4].1 + side_len - 1);
         let target = (offsets[5].0 + side_len - 1, offsets[5].1 + i);
         destinations.insert((source, 1), (target, 2));
-        destinations.insert((target, 0), (source, 1));
+        destinations.insert((target, 0), (source, 3));
         // 6
         // West solved by 1
         // South solved by 2
