@@ -2,20 +2,27 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
 
+const CONSIDER: &'static [[(i64, i64); 3]; 4] = &[
+    [(-1, 1), (0, 1), (1, 1)],
+    [(-1, -1), (0, -1), (1, -1)],
+    [(1, 1), (1, 0), (1, -1)],
+    [(-1, -1), (-1, 0), (-1, 1)],
+];
+
 pub fn solve<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
     let mut elfs = parse(filename);
-    println!("{:?}",elfs);
-    0
+    println!("{:?}", elfs);
+    1
 }
 
 fn solve2<P>(filename: P) -> u32
 where
     P: AsRef<Path>,
 {
-    0
+    1
 }
 
 fn parse<P>(filename: P) -> HashSet<(i64, i64)>
@@ -30,7 +37,7 @@ where
         .for_each(|(y, line)| {
             line.chars().enumerate().for_each(|(x, c)| {
                 if c == '#' {
-                    map.insert((x as i64,y as i64));
+                    map.insert((x as i64, y as i64));
                 }
             });
         });
