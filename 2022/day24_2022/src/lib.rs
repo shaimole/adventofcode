@@ -36,6 +36,13 @@ where
     P: AsRef<Path>,
 {
     let (blizzards_start, size_x, size_y, start, end) = parse(filename);
+
+    for i in 0..10 {
+
+        debug(&move_blizzards(&blizzards_start, &size_x, &size_y, &(i as u32)),&size_x, &size_y, &start, &end,&start);
+        println!("");
+    }
+    return 0;
     let mut queue = VecDeque::new();
     queue.push_back((start, 1));
     while let Some((pos, time)) = queue.pop_front() {
