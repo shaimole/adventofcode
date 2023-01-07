@@ -212,9 +212,13 @@ where
                 }
             }
         }
-        if moves.iter().filter(|(target_pos, (elf, count))| 
-            count == &1).count() == 0 {
-            return i as u32 +1;
+        if moves
+            .iter()
+            .filter(|(target_pos, (elf, count))| count == &1)
+            .count()
+            == 0
+        {
+            return i as u32 + 1;
         }
         moves.iter().for_each(|(target_pos, (elf, count))| {
             if count == &1 {
@@ -222,7 +226,6 @@ where
                 elfs.insert(*target_pos);
             }
         });
-
     }
     unreachable!();
 }

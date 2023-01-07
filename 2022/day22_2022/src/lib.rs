@@ -202,7 +202,6 @@ where
                 println!("pos {:?}", &(position, direction));
                 println!("target {:?}", target);
 
-
                 (target, new_direction) = *cube_map.get(&(position, direction)).unwrap();
                 println!("after transition {:?}", (target, new_direction));
             }
@@ -248,7 +247,7 @@ fn get_destinations_cube() -> HashMap<((usize, usize), usize), ((usize, usize), 
         // West  <-> 4 West
         // 1.y = 4.y.max - 1.y
         let source = (offsets[0].0, i + offsets[0].1);
-        let target = (offsets[3].0, offsets[3].1 + side_len - i-1);
+        let target = (offsets[3].0, offsets[3].1 + side_len - i - 1);
         destinations.insert((source, 2), (target, 0));
         destinations.insert((target, 2), (source, 0));
 

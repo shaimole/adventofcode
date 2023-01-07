@@ -47,7 +47,6 @@ fn rotate(code: &mut Vec<(usize, i128)>, i: usize) {
             let mut new_pos = j as i128 + to_move.1;
             // println!("new pos {:?}", new_pos);
 
-
             new_pos = new_pos.rem_euclid(code.len() as i128);
             if new_pos <= 0 {
                 new_pos += code.len() as i128;
